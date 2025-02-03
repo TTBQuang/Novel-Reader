@@ -1,0 +1,57 @@
+[data-theme="light"] {
+  --color-text-primary: black;
+  --color-background-web: #f6f7f8;
+  --color-background-switch: #ff9800;
+  --color-slider: white;
+  --color-icon-toggle: white;
+  --color-background-top-app-bar: #f6f7f8;
+  --color-background-textfield: #e0e0e0;
+  --color-background-banner: #e9eaec;
+  --color-background-filter: #fefefe;
+  --color-background-text-filter: #d3d3d3;
+  --color-background-gradient: linear-gradient(to top, #e8f5e9, #dcedc8, #c8e6c9, #a5d6a7, #81c784);
+  --color-background-detail-chapter: #eaeaea;
+  --color-background-comment-item: #f3f4f6;
+  --color-background-comment-section: #fefefe;
+  --color-background-comment-count: #f4f5f6;
+  --color-background-novel-detail-container: #fefefe;
+  --color-background-genre-container: #eeeeee;
+  --color-border: silver;
+  --color-even-chapter-item: #f9f9f9;
+}
+
+[data-theme="dark"] {
+  --color-text-primary: white;
+  --color-background-web: #111111;
+  --color-background-switch: #6a0dad;
+  --color-slider: white;
+  --color-icon-toggle: white;
+  --color-background-top-app-bar: #2a2a2a;
+  --color-background-banner: black;
+  --color-background-textfield: #0a0a0a;
+  --color-background-filter: #1f1f1f;
+  --color-background-text-filter: #2a2a2a;
+  --color-background-gradient: linear-gradient(to top, #13271b, #1a3a27, #204e33, #27613f, #2e754b);
+  --color-background-detail-chapter: #222222;
+  --color-background-comment-item: #27272a;
+  --color-background-comment-section: #1f1f1f;
+  --color-background-comment-count: #2a2a2a;
+  --color-background-novel-detail-container: #1f1f1f;
+  --color-background-genre-container: #333333;
+  --color-border: black;
+  --color-even-chapter-item: #252525;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  background-color: var(--color-background-web);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,116 @@
+.comment-section {
+    width: 100%;
+    margin: 0 auto;
+    background-color: var(--color-background-comment-section);
+    border: 1px solid var(--color-border);
+}
+
+.comment-count {
+    background-color: var(--color-background-comment-count);
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: left;
+    padding: 10px;
+    color: var(--color-text-primary);
+}
+
+.comment-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px;
+}
+
+.comment-textfield {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    height: 80px;
+    resize: none;
+    color: var(--color-text-primary);
+    background-color: var(--color-background-top-app-bar);
+}
+
+.comment-submit-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.comment-submit-button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.comment-submit-button:hover {
+    background-color: #218838;
+}
+
+.comment-list {
+    margin: 20px;
+}
+
+.comment-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.comment-text-container {
+    background-color: var(--color-background-comment-item);
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: var(--color-text-primary);
+}
+
+.comment-name {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.comment-text {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.comment-time {
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.pagination {
+    margin-right: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.pagination-button {
+    margin-bottom: 15px;
+    background-color: transparent;
+    color: #28a745;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.pagination-button:hover {
+    color: #218838;
+}

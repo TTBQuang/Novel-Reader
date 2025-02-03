@@ -1,0 +1,61 @@
+.chapter-detail-container {
+    background-color: var(--color-background-detail-chapter);
+}
+
+.chapter-detail-content {
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--color-text-primary);
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.title {
+    font-weight: bold;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.sub-title {
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.info {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.content {
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 auto;
+}
+
+.html-content p {
+    margin: 10px 0;
+    font-family: "Times New Roman", Times, serif;
+    text-align: justify;
+}
+
+.html-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+}
+
+.html-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.comment-section {
+    margin-top: 50px;
+}

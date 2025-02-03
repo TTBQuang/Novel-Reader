@@ -1,0 +1,80 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.top-app-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-background-top-app-bar);
+    color: white;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 46px;
+}
+
+.top-app-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.app-logo {
+    width: 30px;
+    height: auto;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.top-app-bar-content-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bar {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: var(--color-background-textfield);
+    color: var(--color-text-primary);
+}
+
+.login-text {
+    cursor: pointer;
+    color: var(--color-text-primary);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.login-text:hover {
+    color: #3ea692;
+}
+
+.logo-container {
+    width: 60px;
+    height: 30px;
+    background-color: #1d5167;
+    border-radius: 5px;
+}
+
+.app-logo {
+    width: 100%;
+    height: auto;
+    max-height: 30px;
+    object-fit: contain;
+    object-position: center;
+}

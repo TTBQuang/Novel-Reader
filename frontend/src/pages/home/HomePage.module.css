@@ -1,0 +1,47 @@
+.home-page {
+    width: 100%;
+    background-color: var(--color-background-web);
+    display: flex;
+    justify-content: center;
+}
+
+.home-page-content {
+    margin-top: 40px;
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: space-between;
+    width: 1200px;
+}
+
+.left-content {
+    width: 950px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.right-content {
+    width: 225px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.novels-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.novel-item {
+    width: 140px;
+}
+
+.pagination-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}

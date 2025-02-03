@@ -1,0 +1,127 @@
+.login-page {
+    background: var(--color-background-gradient);
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: var(--color-background-top-app-bar);
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-text {
+    font-size: 32px;
+    color: var(--color-text-primary);
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: var(--color-text-primary);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.input-group input {
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    color: var(--color-text-primary);
+}
+
+.login-btn {
+    padding: 14px;
+    background-color: #375a7f;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.register-link {
+    margin-top: 15px;
+    text-decoration: none;
+}
+
+.register-link span:first-child {
+    color: var(--color-text-primary);
+    cursor: default;
+}
+
+.register-link-text {
+    cursor: pointer;
+    color: #007bff;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: black;
+    font-size: 14px;
+    color: var(--color-text-primary);
+}
+
+.separator::before,
+.separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #ddd;
+    margin: 0 10px;
+}
+
+.google-login-btn {
+    padding: 14px;
+    background-color: #db4437;
+    color: white;
+    border: none;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.login-container h2 {
+    font-size: 16px;
+    margin-top: 20px;
+    color: #007bff;
+    cursor: pointer;
+}

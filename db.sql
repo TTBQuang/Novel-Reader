@@ -7,8 +7,6 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255),
     google_id VARCHAR(255) UNIQUE,
-    avatar VARCHAR(255),
-    cover_image VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -22,7 +20,6 @@ CREATE TABLE novels (
     status ENUM('Đang tiến hành', 'Tạm ngưng', 'Đã hoàn thành') NOT NULL DEFAULT 'Đang tiến hành',
     summary TEXT NOT NULL,
     words_count INT DEFAULT 0,
-    followers_count INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_poster FOREIGN KEY (poster) REFERENCES users(id) ON DELETE CASCADE
@@ -67,62 +64,13 @@ CREATE TABLE comments (
     chapter_id INT UNSIGNED DEFAULT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    rate INT DEFAULT NULL CHECK (rate IS NULL OR rate BETWEEN 1 AND 5),
     CONSTRAINT fk_comments_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_comments_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE,
     CONSTRAINT fk_comments_chapter_id FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
 );
 
-CREATE TABLE reviews (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NOT NULL,
-    novel_id INT UNSIGNED NOT NULL,
-    content TEXT NOT NULL,
-    rate INT NOT NULL CHECK (rate BETWEEN 1 AND 5),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_reviews_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_reviews_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE
-);
-
-CREATE TABLE followed_novels (
-    user_id INT UNSIGNED NOT NULL,
-    novel_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (user_id, novel_id),
-    CONSTRAINT fk_followed_novels_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_followed_novels_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE
-);
-
-CREATE TABLE notifications (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NOT NULL,
-    novel_id INT UNSIGNED NOT NULL,
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_notifications_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_notifications_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE
-);
-
 DELIMITER $$
-
--- Increase the number of followers of a novel when a user follows it 
-CREATE TRIGGER increase_followers_after_follow_novel
-AFTER INSERT ON followed_novels
-FOR EACH ROW
-BEGIN
-    UPDATE novels
-    SET followers_count = followers_count + 1
-    WHERE id = NEW.novel_id;
-END $$
-
--- Decrease the number of followers of a novel when a user unfollows it 
-CREATE TRIGGER decrease_followers_after_unfollow_novel
-AFTER DELETE ON followed_novels
-FOR EACH ROW
-BEGIN
-    UPDATE novels
-    SET followers_count = followers_count - 1
-    WHERE id = OLD.novel_id;
-END $$
 
 -- Update column updated_at of a novel when there is new chapter in chapters table
 CREATE TRIGGER update_novel_updated_at

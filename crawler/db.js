@@ -201,30 +201,6 @@ async function getTotalChapters() {
   }
 }
 
-async function insertReview(user_id, novel_id, content, rate) {
-  const connection = await getConnection();
-  try {
-    if (rate < 1 || rate > 5) {
-      throw new Error("Rate must be between 1 and 5");
-    }
-
-    const [result] = await connection.execute(
-      `INSERT INTO reviews (user_id, novel_id, content, rate) 
-             VALUES (?, ?, ?, ?)`,
-      [user_id, novel_id, content, rate]
-    );
-
-    const insertedId = result.insertId;
-
-    return insertedId;
-  } catch (error) {
-    console.error("Error inserting review:", error.message);
-    throw error;
-  } finally {
-    connection.release();
-  }
-}
-
 async function insertFollowedNovel(user_id, novel_id) {
   const connection = await getConnection();
   try {
@@ -243,13 +219,13 @@ async function insertFollowedNovel(user_id, novel_id) {
   }
 }
 
-async function insertCommentInNovel(user_id, novel_id, content) {
+async function insertCommentInNovel(user_id, novel_id, content, rate) {
   const connection = await getConnection();
   try {
     const [result] = await connection.execute(
-      `INSERT INTO comments (user_id, novel_id, content) 
-             VALUES (?, ?, ?)`,
-      [user_id, novel_id, content]
+      `INSERT INTO comments (user_id, novel_id, content, rate) 
+             VALUES (?, ?, ?, ?)`,
+      [user_id, novel_id, content, rate]
     );
 
     return result.insertId;
@@ -286,7 +262,6 @@ module.exports = {
   insertUser,
   getTotalNovels,
   getTotalChapters,
-  insertReview,
   insertFollowedNovel,
   insertCommentInNovel,
   insertCommentInChapter,

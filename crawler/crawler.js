@@ -12,23 +12,18 @@ const {
   insertUser,
   getTotalNovels,
   getTotalChapters,
-  insertReview,
   insertFollowedNovel,
   insertCommentInNovel,
   insertCommentInChapter,
 } = require("./db");
 
-const BASE_URL =
-  "https://ln.hako.vn/danh-sach?truyendich=1&dangtienhanh=1&tamngung=1&hoanthanh=1&sapxep=capnhat&page=";
+const BASE_URL = "https://ln.hako.vn/danh-sach?page=";
 const BASE_NOVEL_URL = "https://ln.hako.vn";
 const filePath = path.join(__dirname, "user_data.csv");
 const usersData = fs.readFileSync(filePath, "utf8").split("\n");
-const USER_COUNT = 150;
-const REVIEW_COUNT = 10000;
-const COMMENT_IN_NOVEL_COUNT = 10000;
-const COMMENT_IN_CHAPTER_COUNT = 50000;
+const COMMENT_IN_NOVEL_COUNT = 15000;
+const COMMENT_IN_CHAPTER_COUNT = 45000;
 const FOLLOWER_COUNT = 10000;
-const PAGE_COUNT = 85;
 
 const axiosInstance = axios.create({
   headers: {
@@ -237,7 +232,7 @@ function sleep(ms) {
 }
 
 async function crawlNovels() {
-  for (let page = 1; page <= PAGE_COUNT; page++) {
+  for (let page = 1; page <= 85; page++) {
     console.log(`Fetching page ${page}...`);
     const html = await fetchPage(`${BASE_URL}${page}`);
 
@@ -305,7 +300,15 @@ function generateRandomString() {
 }
 
 function getRandomUserId() {
-  return Math.floor(Math.random() * USER_COUNT) + 1;
+  let userId;
+
+  if (Math.random() < 0.5) {
+    userId = Math.floor(Math.random() * 1000) + 1;
+  } else {
+    userId = Math.floor(Math.random() * (3084 - 1085 + 1)) + 1085;
+  }
+
+  return userId;
 }
 
 async function insertMultipleFollowers() {
@@ -320,21 +323,7 @@ async function insertMultipleFollowers() {
       console.error("Lỗi khi chèn followers:", error.message);
     }
   }
-  console.log("Đã chèn 10000 followers!");
-}
-
-async function insertMultipleReviews() {
-  for (let i = 0; i < REVIEW_COUNT; i++) {
-    const user_id = getRandomUserId();
-    const totalNovels = await getTotalNovels();
-    const novel_id = Math.floor(Math.random() * totalNovels) + 1;
-    const randomRate = Math.floor(Math.random() * 5) + 1;
-
-    try {
-      await insertReview(user_id, novel_id, generateRandomString(), randomRate);
-    } catch (error) {}
-  }
-  console.log("Đã chèn 10000 reviews!");
+  console.log("Đã chèn followers!");
 }
 
 async function insertMultipleCommentsInNovel() {
@@ -342,12 +331,18 @@ async function insertMultipleCommentsInNovel() {
     const user_id = getRandomUserId();
     const totalNovels = await getTotalNovels();
     const novel_id = Math.floor(Math.random() * totalNovels) + 1;
+    const rate = Math.random() < 0.8 ? null : Math.floor(Math.random() * 5) + 1;
 
     try {
-      await insertCommentInNovel(user_id, novel_id, generateRandomString());
+      await insertCommentInNovel(
+        user_id,
+        novel_id,
+        generateRandomString(),
+        rate
+      );
     } catch (error) {}
   }
-  console.log("Đã chèn 10000 comments vào novels!");
+  console.log("Đã chèn comments vào novels!");
 }
 
 async function insertMultipleCommentsInChapter() {
@@ -360,7 +355,7 @@ async function insertMultipleCommentsInChapter() {
       await insertCommentInChapter(user_id, chapter_id, generateRandomString());
     } catch (error) {}
   }
-  console.log("Đã chèn 50000 comments vào chapter!");
+  console.log("Đã chèn comments vào chapter!");
 }
 
 (async function main() {
@@ -368,7 +363,6 @@ async function insertMultipleCommentsInChapter() {
   await insertUsers();
   await crawlNovels();
   await insertMultipleFollowers();
-  await insertMultipleReviews();
   await insertMultipleCommentsInNovel();
   await insertMultipleCommentsInChapter();
   console.log("Finished crawling.");
