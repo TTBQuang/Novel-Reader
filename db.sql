@@ -64,7 +64,6 @@ CREATE TABLE comments (
     chapter_id INT UNSIGNED DEFAULT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    rate INT DEFAULT NULL CHECK (rate IS NULL OR rate BETWEEN 1 AND 5),
     CONSTRAINT fk_comments_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_comments_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE,
     CONSTRAINT fk_comments_chapter_id FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
