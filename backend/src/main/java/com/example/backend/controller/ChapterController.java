@@ -2,7 +2,6 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.chapter.ChapterDetailDto;
 import com.example.backend.service.ChapterService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

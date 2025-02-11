@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.auth.TokenResponse;
+import com.example.backend.dto.auth.UserGoogleProfile;
 import com.example.backend.entity.User;
 import com.example.backend.exception.UserRegistrationException;
 import com.example.backend.repository.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -53,8 +56,29 @@ public class AuthService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
+    public TokenResponse loginUserGoogle(UserGoogleProfile userGoogleProfile) {
+        Optional<User> optionalUser = userRepository.findByEmail(userGoogleProfile.getEmail());
+        User user;
+        if (optionalUser.isEmpty()) {
+            user = new User();
+            user.setEmail(userGoogleProfile.getEmail());
+            user.setUsername(userGoogleProfile.getUsername());
+            user.setIsAdmin(false);
+            user.setIsCommentBlocked(false);
+            user.setPassword("");
+            userRepository.save(user);
+        } else {
+            user = optionalUser.get();
+        }
+
+        String accessToken = jwtUtil.generateAccessToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
     public TokenResponse refreshAccessToken(String refreshToken) {
-        if (jwtUtil.isRefreshToken(refreshToken)) {
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
             throw new JwtException("Refresh token không hợp lệ hoặc đã hết hạn");
         }
 

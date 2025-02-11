@@ -5,8 +5,10 @@ import com.example.backend.dto.user.UserDto;
 import com.example.backend.service.TokenBlacklistService;
 import com.example.backend.service.AuthService;
 import com.example.backend.service.UserService;
+import com.example.backend.util.GoogleTokenVerifierUtil;
 import com.example.backend.util.JwtUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ public class AuthController {
     private final UserService userService;
     private final TokenBlacklistService tokenBlacklistService;
     private final JwtUtil jwtUtil;
+    private final GoogleTokenVerifierUtil GoogleTokenVerifierUtil;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest request) {
@@ -36,24 +39,36 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(tokens, userDto));
     }
 
+    @PostMapping("/login-google")
+    public ResponseEntity<LoginResponse> loginUserGoogle(@RequestBody LoginGoogleRequest request) {
+        UserGoogleProfile userGoogleProfile = GoogleTokenVerifierUtil.getUserInfoFromIdToken(request.getIdToken());
+        TokenResponse tokens = authService.loginUserGoogle(userGoogleProfile);
+
+        long userId = Long.parseLong(jwtUtil.getSubject(tokens.getAccessToken()));
+        UserDto userDto = userService.getUserById(userId);
+
+        return ResponseEntity.ok(new LoginResponse(tokens, userDto));
+    }
+
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refreshAccessToken(@RequestHeader("Authorization") String authHeader) {
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            throw new IllegalArgumentException("Authorization header không hợp lệ");
-//        }
-//        String token = authHeader.substring(7);
-        TokenResponse tokens = authService.refreshAccessToken(authHeader);
+    public ResponseEntity<TokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+        TokenResponse tokens = authService.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(tokens);
     }
 
-    @PostMapping("/logout")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Authorization header không hợp lệ");
         }
-        String token = authHeader.substring(7);
-        tokenBlacklistService.blacklistToken(token);
+
+        String accessToken = authHeader.substring(7);
+        tokenBlacklistService.blacklistToken(accessToken);
+        tokenBlacklistService.blacklistToken(refreshTokenRequest.getRefreshToken());
+
         return ResponseEntity.ok().build();
     }
 }

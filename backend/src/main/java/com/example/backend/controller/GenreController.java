@@ -2,7 +2,6 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.genre.GenreDto;
 import com.example.backend.service.GenreService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
