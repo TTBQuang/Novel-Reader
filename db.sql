@@ -7,7 +7,9 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255),
     google_id VARCHAR(255) UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+    is_comment_blocked BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE novels (
@@ -19,9 +21,9 @@ CREATE TABLE novels (
     cover VARCHAR(255) DEFAULT NULL,
     status ENUM('Đang tiến hành', 'Tạm ngưng', 'Đã hoàn thành') NOT NULL DEFAULT 'Đang tiến hành',
     summary TEXT NOT NULL,
-    words_count INT DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    words_count INT DEFAULT 0 NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT fk_poster FOREIGN KEY (poster) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -38,8 +40,8 @@ CREATE TABLE chapters (
     chapter_group_id INT UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
     content LONGTEXT NOT NULL,
-    words_count INT DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    words_count INT DEFAULT 0 NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     chapter_order DECIMAL NOT NULL,
     CONSTRAINT fk_chapter_group_id FOREIGN KEY (chapter_group_id) REFERENCES chapter_groups(id) ON DELETE CASCADE
 );
@@ -59,11 +61,11 @@ CREATE TABLE novel_genres (
 
 CREATE TABLE comments (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED,
-    novel_id INT UNSIGNED DEFAULT NULL,
+    user_id INT UNSIGNED NOT NULL,
+    novel_id INT UNSIGNED NOT NULL,
     chapter_id INT UNSIGNED DEFAULT NULL,
     content TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT fk_comments_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_comments_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE,
     CONSTRAINT fk_comments_chapter_id FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
