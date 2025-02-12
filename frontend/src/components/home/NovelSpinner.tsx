@@ -1,20 +1,19 @@
-import React, { useState } from "react";
+import { memo } from "react";
 import styles from "./NovelSpinner.module.css";
 import { NovelSortOption } from "../../models/NovelSortOption";
 
-const NovelSpinner = () => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+interface NovelSpinnerProps {
+  selectedOption: NovelSortOption;
+  onSortOptionChange: (option: NovelSortOption) => void;
+}
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedOption(event.target.value);
-  };
-
-  return (
-    <>
+const NovelSpinner = memo(
+  ({ selectedOption, onSortOptionChange }: NovelSpinnerProps) => {
+    return (
       <select
         className={styles["spinner"]}
         value={selectedOption}
-        onChange={handleChange}
+        onChange={(e) => onSortOptionChange(e.target.value as NovelSortOption)}
       >
         {Object.values(NovelSortOption).map((option) => (
           <option key={option} value={option}>
@@ -22,8 +21,10 @@ const NovelSpinner = () => {
           </option>
         ))}
       </select>
-    </>
-  );
-};
+    );
+  }
+);
+
+NovelSpinner.displayName = "NovelSpinner";
 
 export default NovelSpinner;

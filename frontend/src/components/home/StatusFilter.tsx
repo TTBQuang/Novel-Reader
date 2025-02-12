@@ -1,21 +1,31 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { NovelStatus } from "../../models/NovelStatus";
 import styles from "./StatusFilter.module.css";
 
-const StatusFilter = () => {
-  const [selectedStatus, setSelectedStatus] = useState<NovelStatus[]>([]);
+interface StatusFilterProps {
+  onApply: (selectedStatus: NovelStatus[]) => void;
+}
 
-  const handleCheckboxChange = (status: NovelStatus) => {
-    setSelectedStatus((prev) =>
-      prev.includes(status)
-        ? prev.filter((item) => item !== status)
-        : [...prev, status]
-    );
-  };
+const StatusFilter = memo(({ onApply }: StatusFilterProps) => {
+  const [selectedStatus, setSelectedStatus] = useState<Set<NovelStatus>>(
+    new Set()
+  );
 
-  const handleApplyClick = () => {
-    console.log("Áp dụng filter với các tình trạng:", selectedStatus);
-  };
+  const handleCheckboxChange = useCallback((status: NovelStatus) => {
+    setSelectedStatus((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(status)) {
+        newSet.delete(status);
+      } else {
+        newSet.add(status);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleApplyClick = useCallback(() => {
+    onApply(Array.from(selectedStatus));
+  }, [selectedStatus, onApply]);
 
   return (
     <div className={styles["status-filter-container"]}>
@@ -24,14 +34,17 @@ const StatusFilter = () => {
       </div>
       <div className={styles["status-checkboxes"]}>
         {Object.values(NovelStatus).map((status) => (
-          <div key={status}>
+          <div key={status} className={styles["checkbox-item"]}>
             <input
               type="checkbox"
               id={status}
-              checked={selectedStatus.includes(status)}
+              checked={selectedStatus.has(status)}
               onChange={() => handleCheckboxChange(status)}
+              className={styles["checkbox-input"]}
             />
-            <label htmlFor={status}>{status}</label>
+            <label htmlFor={status} className={styles["checkbox-label"]}>
+              {status}
+            </label>
           </div>
         ))}
       </div>
@@ -40,6 +53,8 @@ const StatusFilter = () => {
       </button>
     </div>
   );
-};
+});
+
+StatusFilter.displayName = "StatusFilter";
 
 export default StatusFilter;

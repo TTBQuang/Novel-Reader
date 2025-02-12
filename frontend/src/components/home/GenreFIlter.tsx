@@ -1,21 +1,29 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { GenreListProps } from "../../models/Genre";
 import styles from "./GenreFilter.module.css";
 
-const GenreFilter = ({ genres }: GenreListProps) => {
-  const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
+interface GenreFilterProps extends GenreListProps {
+  onApply: (selectedGenreIds: number[]) => void;
+}
 
-  const handleCheckboxChange = (genreId: number) => {
-    setSelectedGenres((prev) =>
-      prev.includes(genreId)
-        ? prev.filter((id) => id !== genreId)
-        : [...prev, genreId]
-    );
-  };
+const GenreFilter = memo(({ genres, onApply }: GenreFilterProps) => {
+  const [selectedGenres, setSelectedGenres] = useState<Set<number>>(new Set());
 
-  const handleApplyClick = () => {
-    console.log("Áp dụng filter với các thể loại:", selectedGenres);
-  };
+  const handleCheckboxChange = useCallback((genreId: number) => {
+    setSelectedGenres((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(genreId)) {
+        newSet.delete(genreId);
+      } else {
+        newSet.add(genreId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleApplyClick = useCallback(() => {
+    onApply(Array.from(selectedGenres));
+  }, [selectedGenres, onApply]);
 
   return (
     <div className={styles["genre-filter-container"]}>
@@ -24,14 +32,20 @@ const GenreFilter = ({ genres }: GenreListProps) => {
       </div>
       <div className={styles["genre-checkboxes"]}>
         {genres.map((genre) => (
-          <div key={genre.id}>
+          <div key={genre.id} className={styles["checkbox-item"]}>
             <input
               type="checkbox"
               id={`genre-${genre.id}`}
-              checked={selectedGenres.includes(genre.id)}
+              checked={selectedGenres.has(genre.id)}
               onChange={() => handleCheckboxChange(genre.id)}
+              className={styles["checkbox-input"]}
             />
-            <label htmlFor={`genre-${genre.id}`}>{genre.name}</label>
+            <label
+              htmlFor={`genre-${genre.id}`}
+              className={styles["checkbox-label"]}
+            >
+              {genre.name}
+            </label>
           </div>
         ))}
       </div>
@@ -40,6 +54,8 @@ const GenreFilter = ({ genres }: GenreListProps) => {
       </button>
     </div>
   );
-};
+});
+
+GenreFilter.displayName = "GenreFilter";
 
 export default GenreFilter;

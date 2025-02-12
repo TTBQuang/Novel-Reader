@@ -6,17 +6,9 @@ const NovelItemComponent = ({ novelItem }: NovelItemProps) => {
   return (
     <div className={styles["novel-item"]}>
       <div className={styles["novel-image"]}>
-        <Link to={`/novel/${novelItem.id}/chapter/1`}>
-          <img src={novelItem.image} alt={novelItem.name} />
+        <Link to={`/novel/${novelItem.id}`}>
+          <img src={novelItem.cover} alt="img" />
         </Link>
-        <div className={styles["latest-chapter"]}>
-          <Link
-            to={`/novel/${novelItem.id}/chapter/1`}
-            className={styles["link"]}
-          >
-            <span>{novelItem.latestChapter}</span>
-          </Link>
-        </div>
       </div>
       <div className={styles["novel-title"]}>
         <Link to={`/novel/${novelItem.id}`} className={styles["link"]}>

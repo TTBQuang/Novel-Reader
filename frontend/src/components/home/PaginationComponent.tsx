@@ -1,41 +1,46 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./PaginationComponent.module.css";
 
 interface PaginationProps {
-  currentPage: number;
+  currentPageInput: number;
+  setCurrentPageInput: (page: number) => void;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
 const PaginationComponent = ({
-  currentPage,
+  currentPageInput,
+  setCurrentPageInput,
   totalPages,
   onPageChange,
 }: PaginationProps) => {
-  const [pageInput, setPageInput] = useState<string>(currentPage.toString());
-
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
-      setPageInput(value);
+      setCurrentPageInput(parseInt(value, 10));
     }
   };
 
-  const handlePageSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSubmitInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      const page = Math.max(1, Math.min(totalPages, parseInt(pageInput, 10)));
-      if (page >= 1 && page <= totalPages) {
-        onPageChange(page);
-        alert(`Bạn đã nhập số trang: ${page}`);
+      let page;
+      if (currentPageInput < 1) {
+        page = 1;
+      } else if (currentPageInput > totalPages) {
+        page = totalPages;
       } else {
-        alert(`Số trang không hợp lệ!`);
+        page = Math.max(1, Math.min(totalPages, currentPageInput));
       }
+      onPageChange(page);
     }
   };
 
   const handlePageChange = (newPage: number) => {
+    if (newPage > totalPages || newPage < 1) {
+      return;
+    }
     const page = Math.max(1, Math.min(totalPages, newPage));
-    setPageInput(page.toString());
+    setCurrentPageInput(page);
     onPageChange(page);
   };
 
@@ -43,23 +48,23 @@ const PaginationComponent = ({
     <div className={styles.pagination}>
       <button
         className={styles["pagination-button"]}
-        onClick={() => handlePageChange(currentPage - 1)}
+        onClick={() => handlePageChange(currentPageInput - 1)}
       >
         Trước
       </button>
 
       <input
-        type="text"
-        value={pageInput}
+        type="number"
+        value={currentPageInput}
         onChange={handlePageInputChange}
-        onKeyDown={handlePageSubmit}
+        onKeyDown={handleSubmitInput}
         className={styles["page-input"]}
       />
       <span className={styles["page-total"]}>/{totalPages}</span>
 
       <button
         className={styles["pagination-button"]}
-        onClick={() => handlePageChange(currentPage + 1)}
+        onClick={() => handlePageChange(currentPageInput + 1)}
       >
         Sau
       </button>

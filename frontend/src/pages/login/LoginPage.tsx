@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import styles from "./LoginPage.module.css";
-
-const GOOGLE_CLIENT_ID =
-  "820518618025-8738r4g16qbissmiilcc2ru1f30gfmjb.apps.googleusercontent.com"; // Thay bằng client ID của bạn
 
 const LoginPage = () => {
   const location = useLocation();
@@ -27,55 +22,77 @@ const LoginPage = () => {
     alert(`Đăng nhập với: ${username}`);
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    try {
-      // Gửi ID token lên server
-      const response = await fetch("http://localhost:8080/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: credentialResponse.credential,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Lưu token vào localStorage hoặc state management
-        localStorage.setItem("accessToken", data.accessToken);
-        navigate("/"); // Chuyển hướng sau khi đăng nhập thành công
-      } else {
-        alert("Đăng nhập thất bại");
-      }
-    } catch (error) {
-      console.error("Error during Google login:", error);
-      alert("Đăng nhập thất bại");
-    }
-  };
-
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <div className={styles["login-page"]}>
-        <div className={styles["login-container"]}>
-          {/* ... các phần code khác giữ nguyên ... */}
+    <div className={styles["login-page"]}>
+      <div className={styles["login-container"]}>
+        <h1 className={styles["login-text"]}>Đăng nhập</h1>
 
-          <div className={styles["login-options"]}>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => {
-                console.log("Login Failed");
-                alert("Đăng nhập Google thất bại");
-              }}
+        <form className={styles["login-form"]} onSubmit={handleLogin}>
+          <div className={styles["input-group"]}>
+            <label htmlFor="username">Tên đăng nhập</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              placeholder="Nhập tên đăng nhập"
             />
           </div>
 
-          <h2>
-            <span onClick={handleBackToHome}>Quay lại trang chủ</span>
-          </h2>
+          <div className={styles["input-group"]}>
+            <label htmlFor="password">Mật khẩu</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Nhập mật khẩu"
+            />
+          </div>
+
+          <div className={styles["remember-me"]}>
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
+            <label htmlFor="rememberMe">Ghi nhớ đăng nhập</label>
+          </div>
+
+          <button type="submit" className={styles["login-btn"]}>
+            Đăng nhập
+          </button>
+        </form>
+
+        <div className={styles["register-link"]}>
+          <span>Chưa có tài khoản?</span>
+          <Link
+            to="/register"
+            state={{ fromLogin: true }}
+            className={styles["register-link-text"]}
+          >
+            Đăng ký
+          </Link>
         </div>
+
+        <div className={styles["separator"]}>Hoặc</div>
+
+        <div className={styles["login-options"]}>
+          <button className={styles["google-login-btn"]}>
+            Đăng nhập với Google
+          </button>
+        </div>
+
+        <h2>
+          <span>
+            <span onClick={handleBackToHome}>Quay lại trang chủ</span>
+          </span>
+        </h2>
       </div>
-    </GoogleOAuthProvider>
+    </div>
   );
 };
 

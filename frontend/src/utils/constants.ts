@@ -1,0 +1,1 @@
+export const NOVELS_PER_PAGE = 42;

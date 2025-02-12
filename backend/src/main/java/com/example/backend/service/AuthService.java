@@ -22,6 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public void registerUser(String username, String rawPassword, String email) {
         if (userRepository.existsByUsername(username)) {
@@ -78,7 +79,7 @@ public class AuthService {
     }
 
     public TokenResponse refreshAccessToken(String refreshToken) {
-        if (!jwtUtil.isRefreshToken(refreshToken)) {
+        if (!jwtUtil.isRefreshToken(refreshToken) || tokenBlacklistService.isTokenBlacklisted(refreshToken)) {
             throw new JwtException("Refresh token không hợp lệ hoặc đã hết hạn");
         }
 
