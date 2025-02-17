@@ -21,8 +21,9 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Page<UserDto>> getUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<UserDto> users = userService.getUsers(page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword) {
+        Page<UserDto> users = userService.getUsers(page, size, keyword);
         return ResponseEntity.ok(users);
     }
 

@@ -1,4 +1,4 @@
-export const formatTime = (datetime: string): string => {
+export const timeAgo = (datetime: string): string => {
     const now = new Date();
     const commentDate = new Date(datetime);
 
@@ -15,4 +15,8 @@ export const formatTime = (datetime: string): string => {
     if (hours > 0) return `${hours} giờ trước`;
     if (minutes > 0) return `${minutes} phút trước`;
     return "Vừa xong";
+};
+
+export const formatDate = (datetime: string): string => {
+    return new Date(datetime).toLocaleDateString("en-CA");
 };

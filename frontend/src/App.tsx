@@ -4,6 +4,7 @@ import HomePage from "./pages/home/HomePage";
 import RegisterPage from "./pages/register/RegisterPage";
 import NovelDetailPage from "./pages/novel-detail/NovelDetailPage";
 import ChapterDetailPage from "./pages/chapter-detail/ChapterDetailPage";
+import UserManagementPage from "./pages/user-management/UserManagementPage";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           path="/novel/:novelId/chapter/:chapterId"
           element={<ChapterDetailPage />}
         />
+        <Route path="/admin/users" element={<UserManagementPage />} />
       </Routes>
     </Router>
   );

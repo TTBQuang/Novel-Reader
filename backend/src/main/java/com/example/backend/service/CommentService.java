@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,13 @@ public class CommentService {
     private final ModelMapper modelMapper;
 
     public Page<CommentResponseDto> getCommentsByNovelId(int page, int size, long novelId) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Comment> commentPage = commentRepository.findByNovelId(novelId, pageable);
         return commentPage.map(comment -> modelMapper.map(comment, CommentResponseDto.class));
     }
 
     public Page<CommentResponseDto> getCommentsByChapterId(int page, int size, long chapterId) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Comment> commentPage = commentRepository.findByChapterId(chapterId, pageable);
         return commentPage.map(comment -> modelMapper.map(comment, CommentResponseDto.class));
     }

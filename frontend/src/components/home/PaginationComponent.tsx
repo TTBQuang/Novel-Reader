@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styles from "./PaginationComponent.module.css";
 
 interface PaginationProps {
+  currentPage: number;
   currentPageInput: number;
   setCurrentPageInput: (page: number) => void;
   totalPages: number;
@@ -9,45 +10,57 @@ interface PaginationProps {
 }
 
 const PaginationComponent = ({
+  currentPage,
   currentPageInput,
   setCurrentPageInput,
   totalPages,
   onPageChange,
 }: PaginationProps) => {
-  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value)) {
-      setCurrentPageInput(parseInt(value, 10));
-    }
-  };
+  const validatePageNumber = useCallback(
+    (page: number): number => {
+      if (page < 1) return 1;
+      if (page > totalPages) return totalPages;
+      return page;
+    },
+    [totalPages]
+  );
 
-  const handleSubmitInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      let page;
-      if (currentPageInput < 1) {
-        page = 1;
-      } else if (currentPageInput > totalPages) {
-        page = totalPages;
-      } else {
-        page = Math.max(1, Math.min(totalPages, currentPageInput));
+  const handlePageInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (/^\d*$/.test(value)) {
+        setCurrentPageInput(parseInt(value) || 0);
       }
-      onPageChange(page);
-    }
-  };
+    },
+    [setCurrentPageInput]
+  );
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage > totalPages || newPage < 1) {
-      return;
-    }
-    const page = Math.max(1, Math.min(totalPages, newPage));
-    setCurrentPageInput(page);
-    onPageChange(page);
-  };
+  const handleSubmitInput = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        const validatedPage = validatePageNumber(currentPageInput);
+        onPageChange(validatedPage);
+      }
+    },
+    [currentPageInput, onPageChange, validatePageNumber]
+  );
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      const validatedPage = validatePageNumber(newPage);
+      if (validatedPage === currentPageInput) return;
+
+      setCurrentPageInput(validatedPage);
+      onPageChange(validatedPage);
+    },
+    [currentPageInput, onPageChange, setCurrentPageInput, validatePageNumber]
+  );
 
   return (
     <div className={styles.pagination}>
       <button
         className={styles["pagination-button"]}
+        disabled={currentPage === 1}
         onClick={() => handlePageChange(currentPageInput - 1)}
       >
         Trước
@@ -64,6 +77,7 @@ const PaginationComponent = ({
 
       <button
         className={styles["pagination-button"]}
+        disabled={currentPage === totalPages}
         onClick={() => handlePageChange(currentPageInput + 1)}
       >
         Sau

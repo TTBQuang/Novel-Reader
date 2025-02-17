@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Genre } from "../models/Genre";
-import { fetchGenres } from "../api/genres";
+import { fetchGenres } from "../services/genresApi";
 
 export const useGenres = () => {
     const [genresList, setGenresList] = useState<Genre[]>([]);

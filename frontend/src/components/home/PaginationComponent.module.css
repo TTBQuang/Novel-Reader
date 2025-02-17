@@ -20,6 +20,11 @@
     text-decoration: none;
 }
 
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .page-input {
     padding: 5px;
     width: 50px;

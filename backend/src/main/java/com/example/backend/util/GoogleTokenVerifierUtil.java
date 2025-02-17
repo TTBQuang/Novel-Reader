@@ -32,7 +32,7 @@ public class GoogleTokenVerifierUtil {
 
     public UserGoogleProfile getUserInfoFromIdToken(String idTokenString) {
         try {
-            System.out.println("clientId: " + clientId);
+            System.out.println("idTokenString: " + idTokenString);
             GoogleIdToken idToken = verifier.verify(idTokenString);
             if (idToken != null) {
                 Payload payload = idToken.getPayload();

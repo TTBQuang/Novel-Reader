@@ -95,9 +95,9 @@ const HomePage = () => {
     const urlKeyword = searchParams.get("keyword") || "";
 
     if (
-      urlPage !== page ||
-      urlSortOption !== sortOption ||
-      urlKeyword !== keyword
+      urlPage !== filters.page ||
+      urlSortOption !== filters.sortOption ||
+      urlKeyword !== filters.keyword
     ) {
       setFilters((prev) => ({
         ...prev,
@@ -107,7 +107,8 @@ const HomePage = () => {
         keyword: urlKeyword,
       }));
     }
-  }, [keyword, page, searchParams, sortOption]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const { novelsList, loading, totalPages } = useNovels(
     page - 1,
@@ -231,6 +232,7 @@ const HomePage = () => {
             {renderNovelsList()}
             <div className={styles["pagination-container"]}>
               <PaginationComponent
+                currentPage={page}
                 currentPageInput={pageInput}
                 setCurrentPageInput={handlePageInputChange}
                 totalPages={totalPages}

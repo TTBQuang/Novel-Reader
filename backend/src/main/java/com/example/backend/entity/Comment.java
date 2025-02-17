@@ -18,7 +18,7 @@ public class Comment {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "novel_id", nullable = false)
+    @JoinColumn(name = "novel_id")
     private Novel novel;
 
     @JsonIgnore

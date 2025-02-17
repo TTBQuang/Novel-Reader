@@ -18,11 +18,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public Page<UserDto> getUsers(int page, int size) {
+    public Page<UserDto> getUsers(int page, int size, String keyword) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> userPage = userRepository.findByIsAdminFalse(pageable);
+        Page<User> userPage;
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            userPage = userRepository.findByIsAdminFalse(pageable);
+        } else {
+            userPage = userRepository.searchByKeyword(keyword, pageable);
+        }
+
         return userPage.map(user -> modelMapper.map(user, UserDto.class));
     }
+
 
     public void updateUserCommentBlockStatus(Long userId, boolean isBlocked) {
         User user = userRepository.findById(userId)

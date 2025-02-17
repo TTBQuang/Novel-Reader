@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import styles from "./NovelItemComponent.module.css";
-import { NovelItemProps } from "../../models/NovelItem";
+import { NovelItem } from "../../models/NovelItem";
+
+export interface NovelItemProps {
+  novelItem: NovelItem;
+}
 
 const NovelItemComponent = ({ novelItem }: NovelItemProps) => {
   return (

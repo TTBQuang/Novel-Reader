@@ -78,3 +78,43 @@
     object-fit: contain;
     object-position: center;
 }
+
+.user-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--color-text-primary);
+}
+
+.username {
+    margin-right: 5px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.dropdown-icon {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--color-background-top-app-bar);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 5px;
+    z-index: 1100;
+}
+
+.dropdown-item {
+    padding: 8px 12px;
+    white-space: nowrap;
+}
+
+.dropdown-item:hover {
+    background-color: #3ea692;
+    color: white;
+}

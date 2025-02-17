@@ -76,6 +76,19 @@
     margin-left: 10px;
     margin-right: 10px;
     color: var(--color-text-primary);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.comment-blocked-message {
+    padding: 10px;
+    background-color: #ffdddd;
+    color: #d8000c;
+    border: 1px solid #d8000c;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .comment-name {
@@ -109,6 +122,11 @@
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .pagination-button:hover {

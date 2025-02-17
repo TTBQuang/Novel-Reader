@@ -1,39 +1,117 @@
+import { useParams } from "react-router-dom";
 import styles from "./ChapterDetailPage.module.css";
 import CommentSection from "../../components/shared/CommentSection";
 import ChapterDetailSidebar from "../../components/chapter-detail/ChapterDetailSidebar";
+import { useChapterDetail } from "../../hooks/useChapterDetail";
+import { useChapterComments } from "../../hooks/useChapterComments";
+import { useCreateComment } from "../../hooks/useCreateComment";
+import { useNovelDetail } from "../../hooks/useNovelDetail";
 
 const ChapterDetailPage = () => {
+  const { novelId, chapterId } = useParams<{
+    novelId: string;
+    chapterId: string;
+  }>();
+  const parsedChapterId = chapterId ? parseInt(chapterId, 10) : 0;
+  const parsedNovelId = novelId ? parseInt(novelId, 10) : null;
+
+  const {
+    chapterData,
+    isLoading: isChapterLoading,
+    error: chapterError,
+  } = useChapterDetail(parsedChapterId);
+
+  const {
+    novel,
+    isLoading: isNovelLoading,
+    error: novelError,
+  } = useNovelDetail(parsedNovelId);
+
+  const {
+    comments,
+    totalComments,
+    currentPage,
+    totalPages,
+    isLoading: isCommentsLoading,
+    error: commentsError,
+    fetchComments,
+    addComment,
+  } = useChapterComments(parsedChapterId);
+
+  const {
+    createComment,
+    isLoading: isCreating,
+    error: createError,
+  } = useCreateComment();
+
+  const handleChapterCommentSubmit = async (commentText: string) => {
+    if (!parsedChapterId) return;
+    try {
+      const newComment = await createComment({
+        chapterId: parsedChapterId,
+        content: commentText,
+      });
+
+      if (newComment === undefined) {
+        return;
+      }
+      addComment(newComment);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (isChapterLoading || (isNovelLoading && !novel)) {
+    return <div>Loading...</div>;
+  }
+
+  if (chapterError) {
+    return <div>Error loading chapter: {chapterError.message}</div>;
+  }
+
+  if (novelError) {
+    return <div>Error loading novel: {novelError.message}</div>;
+  }
+
+  if (commentsError) {
+    return <div>Error loading comments: {commentsError.message}</div>;
+  }
+
+  if (!chapterData) {
+    return <div>Không tìm thấy dữ liệu chương.</div>;
+  }
+
   return (
     <div className={styles["chapter-detail-container"]}>
       <div className={styles["chapter-detail-content"]}>
-        <div className={styles["title"]}>
-          Vol 01: Cô gái đảo nghịch từ chối lòng thương xót của Chúa
-        </div>
-        <div className={styles["sub-title"]}>
-          Chương 8: Cô gái đảo nghịch tỏa sáng nơi bóng tối ngự trị
-        </div>
+        <div className={styles["title"]}>{chapterData.chapterGroupName}</div>
+        <div className={styles["sub-title"]}>{chapterData.name}</div>
         <div className={styles["info"]}>
-          12 Bình luận - Độ dài: 6,108 từ - Cập nhật: 5 năm
+          {totalComments} Bình luận - Độ dài:{" "}
+          {chapterData.wordsCount.toLocaleString()} từ - Cập nhật:{" "}
+          {new Date(chapterData.creationDate).toLocaleDateString()}
         </div>
         <div className={styles["content"]}>
           <div
             className={styles["html-content"]}
-            dangerouslySetInnerHTML={{
-              __html: `
-              <p>Đây là đoạn văn đầu tiên của chương, với nhiều chi tiết hấp dẫn.Đây là đoạn văn đầu tiên của chương, với nhiều chi tiết hấp dẫn.Đây là đoạn văn đầu tiên của chương, với nhiều chi tiết hấp dẫn</p>
-              <p>Đây là đoạn văn thứ hai, tiếp nối với các sự kiện trước đó.</p>
-              <img src="https://i.hako.vn/ln/chapters/illusts/155763/cecce5cc-7aa0-498d-a5ed-3887af100a68.jpg" alt="Image 1" />
-              <p>Tiếp theo là một đoạn văn nữa, miêu tả chi tiết hơn.</p>
-              <img src="image2.jpg" alt="Image 2" />
-            `,
-            }}
+            dangerouslySetInnerHTML={{ __html: chapterData.content }}
           ></div>
           <div className={styles["comment-section"]}>
-            <CommentSection />
+            <CommentSection
+              comments={comments}
+              totalComments={totalComments}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              isLoading={isCommentsLoading || isCreating}
+              onPageChange={fetchComments}
+              onSubmit={handleChapterCommentSubmit}
+            />
+            {createError && (
+              <div>Error creating comment: {createError.message}</div>
+            )}
           </div>
         </div>
-
-        <ChapterDetailSidebar />
+        {novel !== null && <ChapterDetailSidebar novel={novel} />}
       </div>
     </div>
   );

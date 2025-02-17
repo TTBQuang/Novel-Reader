@@ -1,53 +1,44 @@
+import { Novel } from "../../models/Novel";
 import styles from "./NovelDetail.module.css";
 
 interface NovelDetailProps {
-  title: string;
-  coverImage: string;
-  genres: string[];
-  author: string;
-  artist: string;
-  status: string;
-  summary: string;
+  novel: Novel;
 }
 
-const NovelDetail = ({
-  title,
-  coverImage,
-  genres,
-  author,
-  artist,
-  status,
-  summary,
-}: NovelDetailProps) => {
+const NovelDetail = ({ novel }: NovelDetailProps) => {
   return (
     <div className={styles["novel-container"]}>
       <div className={styles["novel-header"]}>
-        <img src={coverImage} alt={title} className={styles["novel-image"]} />
+        <img
+          src={novel.cover}
+          alt={novel.name}
+          className={styles["novel-image"]}
+        />
         <div className={styles["novel-info"]}>
-          <h1 className={styles["novel-title"]}>{title}</h1>
+          <h1 className={styles["novel-title"]}>{novel.name}</h1>
           <div className={styles["novel-genres"]}>
-            {genres.map((genre, index) => (
+            {novel.genres.map((genre, index) => (
               <span key={index} className={styles["novel-genre"]}>
-                {genre}
+                {genre.name}
               </span>
             ))}
           </div>
           <div className={styles["novel-metadata"]}>
             <p>
-              <strong>Tác giả:</strong> <span>{author}</span>
+              <strong>Tác giả:</strong> <span>{novel.author}</span>
             </p>
             <p>
-              <strong>Họa sĩ:</strong> <span>{artist}</span>
+              <strong>Họa sĩ:</strong> <span>{novel.artist}</span>
             </p>
             <p>
-              <strong>Tình trạng:</strong> <span>{status}</span>
+              <strong>Tình trạng:</strong> <span>{novel.status}</span>
             </p>
           </div>
         </div>
       </div>
       <div className={styles["novel-summary"]}>
         <h2 className={styles["summary-title"]}>Tóm tắt</h2>
-        <p className={styles["summary-content"]}>{summary}</p>
+        <p className={styles["summary-content"]}>{novel.summary}</p>
       </div>
     </div>
   );

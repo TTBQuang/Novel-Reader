@@ -1,9 +1,10 @@
 import { useState, useCallback, memo } from "react";
-import { GenreListProps } from "../../models/Genre";
+import { Genre } from "../../models/Genre";
 import styles from "./GenreFilter.module.css";
 
-interface GenreFilterProps extends GenreListProps {
+interface GenreFilterProps {
   onApply: (selectedGenreIds: number[]) => void;
+  genres: Genre[];
 }
 
 const GenreFilter = memo(({ genres, onApply }: GenreFilterProps) => {
@@ -55,7 +56,5 @@ const GenreFilter = memo(({ genres, onApply }: GenreFilterProps) => {
     </div>
   );
 });
-
-GenreFilter.displayName = "GenreFilter";
 
 export default GenreFilter;

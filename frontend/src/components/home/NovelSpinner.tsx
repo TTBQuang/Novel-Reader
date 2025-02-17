@@ -25,6 +25,4 @@ const NovelSpinner = memo(
   }
 );
 
-NovelSpinner.displayName = "NovelSpinner";
-
 export default NovelSpinner;

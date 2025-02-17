@@ -1,0 +1,133 @@
+.pageWrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-background-web);
+}
+
+.container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    max-width: 1250px;
+    margin: 0 auto;
+    background-color: var(--color-background-web);
+    color: var(--color-text-primary);
+}
+
+.searchBarContainer {
+    margin-bottom: 20px;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background-textfield-admin-page);
+    color: var(--color-text-primary);
+}
+
+.userHeader {
+    display: grid;
+    grid-template-columns: 80px 200px 1fr;
+    gap: 15px;
+    padding: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.userList {
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+.userItem {
+    display: grid;
+    grid-template-columns: 80px 200px 1fr auto;
+    gap: 15px;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+}
+
+.userItem:last-child {
+    border-bottom: none;
+}
+
+.userInfo {
+    display: contents;
+}
+
+.userId,
+.username,
+.email {
+    font-size: 14px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.actionContainer {
+    justify-self: end;
+    position: relative;
+}
+
+.actionIcon {
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--color-text-primary);
+}
+
+.popupContainer {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--color-background-filter);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    margin-top: 5px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.popupItem {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+}
+
+.popupItem:hover {
+    background-color: var(--color-background-text-filter);
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.pageButton {
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background-textfield);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--color-text-primary);
+}
+
+.pageButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-size: 14px;
+}

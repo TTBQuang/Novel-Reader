@@ -1,66 +1,121 @@
+import { useParams, useNavigate } from "react-router-dom";
 import TopAppBar from "../../components/shared/TopAppBar";
 import MainBanner from "../../components/shared/MainBanner";
 import NovelDetail from "../../components/novel-detail/NovelDetail";
 import ChapterGroupComponent from "../../components/novel-detail/ChapterGroupComponent";
 import CommentSection from "../../components/shared/CommentSection";
 import styles from "./NovelDetailPage.module.css";
+import { useNovelDetail } from "../../hooks/useNovelDetail";
+import { useNovelComments } from "../../hooks/useNovelComments";
+import { useCreateComment } from "../../hooks/useCreateComment";
+import avatar from "../../assets/avatar.jpg";
+import { ChapterGroup } from "../../models/ChapterGroup";
 
 const NovelDetailPage = () => {
-  const fakeNovelData = {
-    title: "Re:Zero - Bắt Đầu Lại Ở Thế Giới Khác",
-    coverImage:
-      "https://noithatbinhminh.com.vn/wp-content/uploads/2022/08/anh-dep-44.jpg.webp",
-    genres: ["Fantasy", "Adventure", "Drama", "Romance", "Psychological"],
-    author: "Tappei Nagatsuki",
-    artist: "Shinichirou Otsuka",
-    status: "Đang tiến hành",
-    summary:
-      "Subaru Natsuki là một học sinh trung học bình thường, một hôm đột nhiên bị triệu hồi đến một thế giới fantasy khác. Khi vừa đến nơi, cậu bị một nhóm côn đồ tấn công và được một cô gái xinh đẹp tóc bạc tên Emilia cứu giúp. Để đền ơn cô, Subaru quyết định giúp cô tìm lại huy hiệu bị đánh cắp, nhưng mọi chuyện không hề đơn giản khi cả hai bị cuốn vào một chuỗi sự kiện đẫm máu. Subaru phát hiện ra mình có khả năng 'Trở Về Từ Cái Chết', cho phép cậu quay trở lại thời điểm nhất định sau khi chết. Với năng lực này, cậu thề sẽ cứu được Emilia và những người bạn khỏi số phận bi thảm.",
+  const { novelId } = useParams<{ novelId: string }>();
+  const parsedNovelId = novelId ? parseInt(novelId, 10) : null;
+  const navigate = useNavigate();
+
+  const { novel, isLoading, error } = useNovelDetail(parsedNovelId);
+
+  const {
+    comments: novelComments,
+    totalComments: novelTotalComments,
+    currentPage: novelCurrentPage,
+    totalPages: novelTotalPages,
+    isLoading: isNovelCommentsLoading,
+    error: novelCommentsError,
+    fetchComments: fetchNovelComments,
+    addComment: addNovelComment,
+  } = useNovelComments(parsedNovelId);
+
+  const {
+    createComment,
+    isLoading: isCreating,
+    error: createError,
+  } = useCreateComment();
+
+  const handleNovelCommentSubmit = async (commentText: string) => {
+    if (!novel || !novel.id) return;
+    try {
+      const newComment = await createComment({
+        novelId: novel.id,
+        content: commentText,
+      });
+      if (newComment === undefined) {
+        return;
+      }
+      addNovelComment(newComment);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const fakeChapters = Array.from({ length: 30 }, (_, index) => ({
-    title: `Chapter ${index + 1}: Khởi đầu`,
-    date: "01/01/2023",
-  }));
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!novel) {
+    return <div>Không tìm thấy dữ liệu truyện.</div>;
+  }
 
   return (
     <>
-      <TopAppBar />
+      <TopAppBar
+        onSearch={(keyword: string) => {
+          navigate(`/?keyword=${encodeURIComponent(keyword)}`);
+        }}
+        onLogoClick={() => {
+          navigate("/");
+        }}
+      />
       <MainBanner />
       <div className={styles["page-content-container"]}>
         <div className={styles["novel-detail-container"]}>
           <div className={styles["novel-detail"]}>
-            <NovelDetail {...fakeNovelData} />
+            <NovelDetail novel={novel} />
           </div>
           <div className={styles["avatar-row"]}>
             <div className={styles["avatar"]}>
-              <img
-                src="https://noithatbinhminh.com.vn/wp-content/uploads/2022/08/anh-dep-44.jpg.webp"
-                alt="Avatar"
-              />
+              <img src={avatar} alt="Avatar" />
             </div>
             <div className={styles["poster-name"]}>
-              <span>Tran Ton Buu Quang</span>
+              <span>{novel.poster.username}</span>
             </div>
           </div>
 
-          <div className={styles["chapter-group-container"]}>
-            <ChapterGroupComponent
-              groupTitle="Danh sách chương mới nhất"
-              imageSrc="https://noithatbinhminh.com.vn/wp-content/uploads/2022/08/anh-dep-44.jpg.webp"
-              chapters={fakeChapters}
-            />
-          </div>
+          {novel.chapterGroups.map((chapterGroup: ChapterGroup) => (
+            <div
+              key={chapterGroup.id}
+              className={styles["chapter-group-container"]}
+            >
+              <ChapterGroupComponent
+                novel={novel}
+                chapterGroup={chapterGroup}
+              />
+            </div>
+          ))}
 
-          <div className={styles["chapter-group-container"]}>
-            <ChapterGroupComponent
-              groupTitle="Danh sách chương mới nhất"
-              imageSrc="https://noithatbinhminh.com.vn/wp-content/uploads/2022/08/anh-dep-44.jpg.webp"
-              chapters={fakeChapters}
+          {novelCommentsError ? (
+            <div>Error loading comments: {novelCommentsError.message}</div>
+          ) : (
+            <CommentSection
+              comments={novelComments}
+              totalComments={novelTotalComments}
+              currentPage={novelCurrentPage}
+              totalPages={novelTotalPages}
+              isLoading={isNovelCommentsLoading || isCreating}
+              onPageChange={fetchNovelComments}
+              onSubmit={handleNovelCommentSubmit}
             />
-          </div>
-
-          <CommentSection />
+          )}
+          {createError && (
+            <div>Error creating comment: {createError.message}</div>
+          )}
         </div>
       </div>
     </>

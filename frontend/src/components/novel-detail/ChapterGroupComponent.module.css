@@ -11,7 +11,7 @@
     background-color: var(--color-background-comment-count);
 }
 
-.title-row h2 {
+.title-row h3 {
     font-weight: bold;
     text-align: left;
     margin: 0;
@@ -58,6 +58,7 @@
 .chapter-title {
     text-align: left;
     flex: 1;
+    margin-right: 10px;
 }
 
 .chapter-title span {

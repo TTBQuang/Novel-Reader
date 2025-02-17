@@ -18,6 +18,7 @@
   --color-background-genre-container: #eeeeee;
   --color-border: silver;
   --color-even-chapter-item: #f9f9f9;
+  --color-background-textfield-admin-page: #fefefe;
 }
 
 [data-theme="dark"] {
@@ -40,6 +41,7 @@
   --color-background-genre-container: #333333;
   --color-border: black;
   --color-even-chapter-item: #252525;
+  --color-background-textfield-admin-page: #1f1f1f;
 }
 
 :root {

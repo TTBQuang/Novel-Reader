@@ -55,6 +55,4 @@ const StatusFilter = memo(({ onApply }: StatusFilterProps) => {
   );
 });
 
-StatusFilter.displayName = "StatusFilter";
-
 export default StatusFilter;

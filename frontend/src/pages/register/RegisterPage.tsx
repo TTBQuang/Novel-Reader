@@ -1,17 +1,14 @@
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useRegister } from "../../hooks/useRegister";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styles from "./RegisterPage.module.css";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Đăng ký với: ${username}`);
-  };
+  const { formData, errors, isLoading, handleInputChange, handleSubmit } =
+    useRegister();
 
   const handleBackToLogin = () => {
     if (location.state?.fromLogin) {
@@ -21,22 +18,72 @@ const RegisterPage = () => {
     }
   };
 
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await handleSubmit();
+    if (success) {
+      toast.success("Đăng ký thành công!");
+      setTimeout(() => {
+        handleBackToLogin();
+      }, 500);
+    }
+  };
+
   return (
     <div className={styles["register-page"]}>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
       <div className={styles["register-container"]}>
         <h1 className={styles["register-text"]}>Đăng ký</h1>
 
-        <form className={styles["register-form"]} onSubmit={handleRegister}>
+        <form
+          className={styles["register-form"]}
+          onSubmit={onSubmit}
+          autoComplete="off"
+        >
           <div className={styles["input-group"]}>
             <label htmlFor="username">Tên đăng nhập</label>
             <input
               type="text"
               id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={formData.username}
+              onChange={handleInputChange}
               required
               placeholder="Nhập tên đăng nhập"
+              disabled={isLoading}
+              autoComplete="off"
             />
+            {errors.username && (
+              <span className={styles["error-message"]}>{errors.username}</span>
+            )}
+          </div>
+
+          <div className={styles["input-group"]}>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              placeholder="Nhập Email"
+              disabled={isLoading}
+              autoComplete="off"
+            />
+            {errors.email && (
+              <span className={styles["error-message"]}>{errors.email}</span>
+            )}
           </div>
 
           <div className={styles["input-group"]}>
@@ -44,15 +91,24 @@ const RegisterPage = () => {
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleInputChange}
               required
               placeholder="Nhập mật khẩu"
+              disabled={isLoading}
+              autoComplete="new-password"
             />
+            {errors.password && (
+              <span className={styles["error-message"]}>{errors.password}</span>
+            )}
           </div>
 
-          <button type="submit" className={styles["register-btn"]}>
-            Đăng ký
+          <button
+            type="submit"
+            className={styles["register-btn"]}
+            disabled={isLoading}
+          >
+            {isLoading ? "Đang xử lý..." : "Đăng ký"}
           </button>
         </form>
 

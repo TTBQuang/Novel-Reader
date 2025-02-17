@@ -9,6 +9,3 @@ export interface NovelsResponse {
   content: NovelItem[];
   page: PageInfo;
 }
-export interface NovelItemProps {
-  novelItem: NovelItem;
-}

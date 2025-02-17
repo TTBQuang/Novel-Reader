@@ -51,10 +51,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<LoginResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
         String refreshToken = request.getRefreshToken();
         TokenResponse tokens = authService.refreshAccessToken(refreshToken);
-        return ResponseEntity.ok(tokens);
+
+        long userId = Long.parseLong(jwtUtil.getSubject(tokens.getAccessToken()));
+        UserDto userDto = userService.getUserById(userId);
+
+        return ResponseEntity.ok(new LoginResponse(tokens, userDto));
     }
 
     @SecurityRequirement(name = "bearerAuth")

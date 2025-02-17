@@ -16,3 +16,16 @@ export const mapNovelStatusToApiValue = (novelStatus: NovelStatus): string => {
       return "";
   }
 };
+
+export const mapApiStatusToNovelStatus = (apiStatus: string): NovelStatus => {
+  switch (apiStatus) {
+    case "DANG_TIEN_HANH":
+      return NovelStatus.Ongoing;
+    case "TAM_NGUNG":
+      return NovelStatus.Paused;
+    case "DA_HOAN_THANH":
+      return NovelStatus.Completed;
+    default:
+      return apiStatus as NovelStatus;
+  }
+};

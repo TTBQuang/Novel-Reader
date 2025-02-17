@@ -1,43 +1,45 @@
 import { Link } from "react-router-dom";
 import styles from "./ChapterGroupComponent.module.css";
-
-export interface Chapter {
-  title: string;
-  date: string;
-}
-
+import { Novel } from "../../models/Novel";
+import { ChapterGroup } from "../../models/ChapterGroup";
+import { formatDate } from "../../utils/dateUtils";
 export interface ChapterGroupComponentProps {
-  groupTitle: string;
-  imageSrc: string;
-  chapters: Chapter[];
+  chapterGroup: ChapterGroup;
+  novel: Novel;
 }
 
 const ChapterGroupComponent = ({
-  groupTitle,
-  imageSrc,
-  chapters,
+  chapterGroup,
+  novel,
 }: ChapterGroupComponentProps) => {
   return (
     <div className={styles["chapter-group"]}>
       <div className={styles["title-row"]}>
-        <h2>{groupTitle}</h2>
+        <h3>{chapterGroup.name}</h3>
       </div>
 
       <div className={styles["content-row"]}>
         <div className={styles["image-column"]}>
-          <img src={imageSrc} alt={groupTitle} />
+          <img src={novel.cover} alt={chapterGroup.name} />
         </div>
 
         <div className={styles["list-column"]}>
           <ul className={styles["chapter-list"]}>
-            {chapters.map((chapter, index) => (
+            {chapterGroup.chapters.map((chapter, index) => (
               <li key={index} className={styles["chapter-item"]}>
-                <Link to="chapter/1" className={styles["link"]}>
+                <Link
+                  to={`chapter/${chapter.id}`}
+                  className={styles["link"]}
+                  state={{ novel }}
+                >
                   <div className={styles["chapter-title"]}>
-                    <span>{chapter.title}</span>
+                    <span>{chapter.name}</span>
                   </div>
                 </Link>
-                <span className={styles["chapter-date"]}>{chapter.date}</span>
+
+                <span className={styles["chapter-date"]}>
+                  {formatDate(chapter.creationDate)}
+                </span>
               </li>
             ))}
           </ul>

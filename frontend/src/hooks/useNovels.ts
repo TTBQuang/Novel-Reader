@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NovelItem } from "../models/NovelItem";
-import { fetchNovels } from "../api/novels";
+import { fetchNovels } from "../services/novelsApi";
 import { NovelsResponse } from "../models/NovelItem";
 import { NOVELS_PER_PAGE } from "../utils/constants";
 
