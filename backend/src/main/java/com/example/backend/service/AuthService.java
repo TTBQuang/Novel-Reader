@@ -2,19 +2,24 @@ package com.example.backend.service;
 
 import com.example.backend.dto.auth.TokenResponse;
 import com.example.backend.dto.auth.UserGoogleProfile;
+import com.example.backend.entity.OtpVerification;
 import com.example.backend.entity.User;
 import com.example.backend.exception.UserRegistrationException;
+import com.example.backend.repository.OtpVerificationRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @AllArgsConstructor
@@ -23,8 +28,12 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenBlacklistService tokenBlacklistService;
+    private OtpVerificationRepository otpVerificationRepository;
+    private EmailService emailService;
 
-    public void registerUser(String username, String rawPassword, String email) {
+    private static final int OTP_EXPIRY_MINUTES = 10;
+
+    public void initiateRegistration(String username, String rawPassword, String email) {
         if (userRepository.existsByUsername(username)) {
             throw new UserRegistrationException("Username đã tồn tại");
         }
@@ -32,15 +41,51 @@ public class AuthService {
             throw new UserRegistrationException("Email đã tồn tại");
         }
 
+        String otp = generateOtp();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+
+        OtpVerification verification = new OtpVerification();
+        verification.setEmail(email);
+        verification.setOtp(otp);
+        verification.setExpiryDate(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES));
+        verification.setUsername(username);
+        verification.setPassword(encodedPassword);
+
+        otpVerificationRepository.findByEmail(email).ifPresent(old ->
+                otpVerificationRepository.delete(old));
+
+        otpVerificationRepository.save(verification);
+
+        emailService.sendOtpEmail(email, otp);
+    }
+
+    public void verifyOtpAndRegisterUser(String email, String otp) {
+        OtpVerification verification = otpVerificationRepository
+                .findByEmailAndOtpAndUsedFalseAndExpiryDateAfter(email, otp, LocalDateTime.now())
+                .orElseThrow(() -> new RuntimeException("Mã OTP không hợp lệ hoặc đã hết hạn"));
+
         User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
+        user.setUsername(verification.getUsername());
+        user.setEmail(verification.getEmail());
+        user.setPassword(verification.getPassword());
         user.setIsAdmin(false);
         user.setIsCommentBlocked(false);
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        user.setPassword(encodedPassword);
 
         userRepository.save(user);
+
+        verification.setUsed(true);
+        otpVerificationRepository.save(verification);
+    }
+
+    private String generateOtp() {
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
+    }
+
+    @Scheduled(cron = "0 */30 * * * *")
+    public void cleanupExpiredOtps() {
+        otpVerificationRepository.deleteByExpiryDateBefore(LocalDateTime.now());
     }
 
     public TokenResponse loginUser(String username, String rawPassword) {

@@ -23,10 +23,16 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final GoogleTokenVerifierUtil GoogleTokenVerifierUtil;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest request) {
-        authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
-        return ResponseEntity.noContent().build();
+    @PostMapping("/register/initiate")
+    public ResponseEntity<String> initiateRegistration(@RequestBody RegistrationRequest request) {
+        authService.initiateRegistration(request.getUsername(), request.getPassword(), request.getEmail());
+        return ResponseEntity.ok("Mã xác thực đã được gửi đến email của bạn");
+    }
+
+    @PostMapping("/register/verify")
+    public ResponseEntity<String> verifyOtp(@RequestBody OtpVerificationRequest request) {
+        authService.verifyOtpAndRegisterUser(request.getEmail(), request.getOtp());
+        return ResponseEntity.ok("Đăng ký thành công");
     }
 
     @PostMapping("/login")
