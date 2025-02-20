@@ -11,6 +11,23 @@ CREATE TABLE users (
     is_comment_blocked BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE otp_verification (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    otp VARCHAR(10) NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT FALSE,
+    username VARCHAR(255),
+    password VARCHAR(255),
+    otp_type ENUM('REGISTRATION', 'PASSWORD_RESET') NOT NULL,
+    attempt_count INT NOT NULL DEFAULT 0,
+    CONSTRAINT check_username_password_not_null 
+        CHECK (
+            (otp_type = 'REGISTRATION' AND username IS NOT NULL AND password IS NOT NULL) 
+            OR otp_type = 'PASSWORD_RESET'
+        )
+);
+
 CREATE TABLE novels (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     poster INT UNSIGNED NOT NULL,

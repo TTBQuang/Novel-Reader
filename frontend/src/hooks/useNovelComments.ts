@@ -11,6 +11,7 @@ interface UseNovelCommentsResult {
     error: Error | null;
     fetchComments: (page: number) => Promise<void>;
     addComment: (newComment: Comment) => void;
+    deleteComment: (commentId: number) => void;
 }
 
 export const useNovelComments = (
@@ -45,6 +46,11 @@ export const useNovelComments = (
         setTotalComments(prev => prev + 1);
     };
 
+    const deleteComment = (commentId: number) => {
+        setComments(prev => prev.filter(comment => comment.id !== commentId));
+        setTotalComments(prev => prev - 1);
+    };
+
     useEffect(() => {
         fetchComments(0);
     }, [novelId]);
@@ -58,5 +64,6 @@ export const useNovelComments = (
         error,
         fetchComments,
         addComment,
+        deleteComment,
     };
 };

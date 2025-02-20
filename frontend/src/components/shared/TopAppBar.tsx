@@ -101,7 +101,7 @@ const TopAppBar = memo(({ onSearch, onLogoClick }: TopAppBarProps) => {
     return (
       <Link
         to="/login"
-        state={{ fromHome: true }}
+        state={{ from: location.pathname + location.search }}
         className={styles["login-text"]}
       >
         Đăng nhập

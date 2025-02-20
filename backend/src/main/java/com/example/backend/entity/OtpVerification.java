@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.enums.OtpType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +28,13 @@ public class OtpVerification {
     @Column(nullable = false)
     private boolean used = false;
 
-    @Column(nullable = false)
     private String username;
-
-    @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OtpType otpType;
+
+    @Column(name = "attempt_count", nullable = false)
+    private int attemptCount = 0;
 }

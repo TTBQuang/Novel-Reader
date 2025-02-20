@@ -4,13 +4,61 @@ import { apiClient } from "./apiClient";
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 
-export const register = async (
+export const initiateRegistration = async (
     username: string,
     password: string,
     email: string
-): Promise<boolean> => {
-    await apiClient.post('/auth/register', { username, password, email }, { requireAuth: false });
-    return true;
+): Promise<void> => {
+    try {
+        await apiClient.post('/auth/register/initiate', { username, password, email }, { requireAuth: false });
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        }
+        throw new Error('Có lỗi xảy ra');
+    }
+};
+
+export const verifyOtpRegistration = async (
+    otp: string,
+    email: string,
+): Promise<void> => {
+    try {
+        await apiClient.post('/auth/register/verify', { otp, email }, { requireAuth: false });
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        }
+        throw new Error('Có lỗi xảy ra');
+    }
+};
+
+export const initiatePasswordReset = async (
+    email: string
+): Promise<void> => {
+    try {
+        await apiClient.post('/auth/password/reset/initiate', { email }, { requireAuth: false });
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        }
+        throw new Error('Có lỗi xảy ra');
+    }
+};
+
+export const verifyOtpPasswordReset = async (
+    otp: string,
+    email: string,
+    password: string
+): Promise<void> => {
+    try {
+        await apiClient.post('/auth/password/reset/confirm', { otp, email, newPassword: password }, { requireAuth: false });
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        }
+        throw new Error('Có lỗi xảy ra');
+    }
 };
 
 export const login = async (username: string, password: string): Promise<LoginResponse> => {

@@ -1,19 +1,20 @@
-// CommentSection.tsx
 import { useState } from "react";
 import styles from "./CommentSection.module.css";
 import { timeAgo } from "../../utils/dateUtils";
 import { useAuth } from "../../hooks/useAuth";
 import avatar from "../../assets/avatar.jpg";
 import { Comment } from "../../models/Comment";
+import { FaEllipsisV, FaSpinner } from "react-icons/fa";
 
 interface CommentSectionProps {
   comments: Comment[];
   totalComments: number;
   currentPage: number;
   totalPages: number;
-  isLoading: boolean;
+  isLoadingComments: boolean;
   onPageChange: (page: number) => void;
-  onSubmit?: (commentText: string) => void;
+  onSubmit: (commentText: string) => void;
+  onDeleteComment: (commentId: number) => Promise<void>;
 }
 
 const CommentSection = ({
@@ -21,13 +22,17 @@ const CommentSection = ({
   totalComments,
   currentPage,
   totalPages,
-  isLoading,
+  isLoadingComments,
   onPageChange,
   onSubmit,
+  onDeleteComment,
 }: CommentSectionProps) => {
   const [commentText, setCommentText] = useState("");
   const { user } = useAuth();
-
+  const [openPopupId, setOpenPopupId] = useState<number | null>(null);
+  const [deletingCommentId, setDeletingCommentId] = useState<number | null>(
+    null
+  );
   const handleCommentSubmit = () => {
     if (commentText.trim() && onSubmit) {
       onSubmit(commentText);
@@ -35,7 +40,21 @@ const CommentSection = ({
     }
   };
 
-  if (isLoading) {
+  const handleDeleteComment = async (commentId: number) => {
+    setDeletingCommentId(commentId);
+    try {
+      await onDeleteComment(commentId);
+      setOpenPopupId(null);
+    } finally {
+      setDeletingCommentId(null);
+    }
+  };
+
+  const handleIconClick = (id: number) => {
+    setOpenPopupId(openPopupId === id ? null : id);
+  };
+
+  if (isLoadingComments) {
     return <div>Đang tải bình luận...</div>;
   }
 
@@ -83,6 +102,30 @@ const CommentSection = ({
               <div className={styles["comment-time"]}>
                 {timeAgo(comment.createdAt)}
               </div>
+              {(user?.id === comment.user.id || user?.admin === true) && (
+                <div className={styles["action-container"]}>
+                  {deletingCommentId === comment.id ? (
+                    <FaSpinner className={styles["loading-icon"]} />
+                  ) : (
+                    <>
+                      <FaEllipsisV
+                        className={styles["action-icon"]}
+                        onClick={() => handleIconClick(comment.id)}
+                      />
+                      {openPopupId === comment.id && (
+                        <div className={styles["popup-container"]}>
+                          <div
+                            className={styles["popup-item"]}
+                            onClick={() => handleDeleteComment(comment.id)}
+                          >
+                            {"Xóa bình luận"}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}

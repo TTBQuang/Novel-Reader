@@ -72,6 +72,7 @@
 .comment-text-container {
     background-color: var(--color-background-comment-item);
     padding: 5px 10px;
+    padding-right: 30px;
     border-radius: 5px;
     margin-left: 10px;
     margin-right: 10px;
@@ -79,6 +80,7 @@
     overflow-wrap: break-word;
     word-break: break-word;
     white-space: normal;
+    position: relative;
 }
 
 .comment-blocked-message {
@@ -131,4 +133,56 @@
 
 .pagination-button:hover {
     color: #218838;
+}
+
+.action-container {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.action-icon {
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    opacity: 0.6;
+}
+
+.popup-container {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--color-background-filter);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    margin-top: 5px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.popup-item {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+}
+
+.popup-item:hover {
+    background-color: var(--color-background-text-filter);
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }

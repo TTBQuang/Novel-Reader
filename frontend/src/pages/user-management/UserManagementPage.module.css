@@ -1,4 +1,4 @@
-.pageWrapper {
+.page-wrapper {
     width: 100%;
     min-height: 100vh;
     background-color: var(--color-background-web);
@@ -13,11 +13,11 @@
     color: var(--color-text-primary);
 }
 
-.searchBarContainer {
+.search-bar-container {
     margin-bottom: 20px;
 }
 
-.searchInput {
+.search-input {
     width: 100%;
     padding: 8px 12px;
     font-size: 16px;
@@ -27,7 +27,7 @@
     color: var(--color-text-primary);
 }
 
-.userHeader {
+.user-header {
     display: grid;
     grid-template-columns: 80px 200px 1fr;
     gap: 15px;
@@ -36,12 +36,12 @@
     border-bottom: 1px solid var(--color-border);
 }
 
-.userList {
+.user-list {
     border: 1px solid var(--color-border);
     border-radius: 4px;
 }
 
-.userItem {
+.user-item {
     display: grid;
     grid-template-columns: 80px 200px 1fr auto;
     gap: 15px;
@@ -51,15 +51,15 @@
     position: relative;
 }
 
-.userItem:last-child {
+.user-item:last-child {
     border-bottom: none;
 }
 
-.userInfo {
+.user-info {
     display: contents;
 }
 
-.userId,
+.user-id,
 .username,
 .email {
     font-size: 14px;
@@ -69,18 +69,18 @@
     text-overflow: ellipsis;
 }
 
-.actionContainer {
+.action-container {
     justify-self: end;
     position: relative;
 }
 
-.actionIcon {
+.action-icon {
     cursor: pointer;
     font-size: 18px;
     color: var(--color-text-primary);
 }
 
-.popupContainer {
+.popup-container {
     position: absolute;
     right: 0;
     top: 100%;
@@ -93,7 +93,7 @@
     overflow: hidden;
 }
 
-.popupItem {
+.popup-item {
     padding: 8px 12px;
     font-size: 14px;
     cursor: pointer;
@@ -101,7 +101,7 @@
     white-space: nowrap;
 }
 
-.popupItem:hover {
+.popup-item:hover {
     background-color: var(--color-background-text-filter);
 }
 
@@ -113,7 +113,7 @@
     gap: 10px;
 }
 
-.pageButton {
+.page-button {
     padding: 6px 12px;
     border: 1px solid var(--color-border);
     background-color: var(--color-background-textfield);
@@ -123,11 +123,25 @@
     color: var(--color-text-primary);
 }
 
-.pageButton:disabled {
+.page-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 .page-info {
     font-size: 14px;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }

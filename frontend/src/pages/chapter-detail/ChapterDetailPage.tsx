@@ -6,6 +6,8 @@ import { useChapterDetail } from "../../hooks/useChapterDetail";
 import { useChapterComments } from "../../hooks/useChapterComments";
 import { useCreateComment } from "../../hooks/useCreateComment";
 import { useNovelDetail } from "../../hooks/useNovelDetail";
+import { ToastContainer } from "react-toastify";
+import { useDeleteComment } from "../../hooks/useDeleteComment";
 
 const ChapterDetailPage = () => {
   const { novelId, chapterId } = useParams<{
@@ -27,6 +29,17 @@ const ChapterDetailPage = () => {
     error: novelError,
   } = useNovelDetail(parsedNovelId);
 
+  const { handleDeleteComment: deleteCommentInServer } = useDeleteComment();
+
+  const deleteComment = async (commentId: number) => {
+    try {
+      await deleteCommentInServer(commentId);
+      deleteItemInLocalComments(commentId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const {
     comments,
     totalComments,
@@ -36,6 +49,7 @@ const ChapterDetailPage = () => {
     error: commentsError,
     fetchComments,
     addComment,
+    deleteComment: deleteItemInLocalComments,
   } = useChapterComments(parsedChapterId);
 
   const {
@@ -83,6 +97,18 @@ const ChapterDetailPage = () => {
 
   return (
     <div className={styles["chapter-detail-container"]}>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className={styles["chapter-detail-content"]}>
         <div className={styles["title"]}>{chapterData.chapterGroupName}</div>
         <div className={styles["sub-title"]}>{chapterData.name}</div>
@@ -102,9 +128,10 @@ const ChapterDetailPage = () => {
               totalComments={totalComments}
               currentPage={currentPage}
               totalPages={totalPages}
-              isLoading={isCommentsLoading || isCreating}
+              isLoadingComments={isCommentsLoading || isCreating}
               onPageChange={fetchComments}
               onSubmit={handleChapterCommentSubmit}
+              onDeleteComment={deleteComment}
             />
             {createError && (
               <div>Error creating comment: {createError.message}</div>

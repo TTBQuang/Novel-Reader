@@ -10,13 +10,20 @@ import { useNovelComments } from "../../hooks/useNovelComments";
 import { useCreateComment } from "../../hooks/useCreateComment";
 import avatar from "../../assets/avatar.jpg";
 import { ChapterGroup } from "../../models/ChapterGroup";
+import { useDeleteComment } from "../../hooks/useDeleteComment";
+import { ToastContainer } from "react-toastify";
 
 const NovelDetailPage = () => {
   const { novelId } = useParams<{ novelId: string }>();
   const parsedNovelId = novelId ? parseInt(novelId, 10) : null;
   const navigate = useNavigate();
 
-  const { novel, isLoading, error } = useNovelDetail(parsedNovelId);
+  const {
+    novel,
+    isLoading: isLoadingNovelDetail,
+    error: errorLoadingNovelDetail,
+  } = useNovelDetail(parsedNovelId);
+  const { handleDeleteComment: deleteCommentInServer } = useDeleteComment();
 
   const {
     comments: novelComments,
@@ -27,6 +34,7 @@ const NovelDetailPage = () => {
     error: novelCommentsError,
     fetchComments: fetchNovelComments,
     addComment: addNovelComment,
+    deleteComment: deleteItemInLocalComments,
   } = useNovelComments(parsedNovelId);
 
   const {
@@ -51,12 +59,21 @@ const NovelDetailPage = () => {
     }
   };
 
-  if (isLoading) {
+  const deleteComment = async (commentId: number) => {
+    try {
+      await deleteCommentInServer(commentId);
+      deleteItemInLocalComments(commentId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (isLoadingNovelDetail) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  if (errorLoadingNovelDetail) {
+    return <div>Error: {errorLoadingNovelDetail.message}</div>;
   }
 
   if (!novel) {
@@ -65,6 +82,18 @@ const NovelDetailPage = () => {
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <TopAppBar
         onSearch={(keyword: string) => {
           navigate(`/?keyword=${encodeURIComponent(keyword)}`);
@@ -108,9 +137,10 @@ const NovelDetailPage = () => {
               totalComments={novelTotalComments}
               currentPage={novelCurrentPage}
               totalPages={novelTotalPages}
-              isLoading={isNovelCommentsLoading || isCreating}
+              isLoadingComments={isNovelCommentsLoading || isCreating}
               onPageChange={fetchNovelComments}
               onSubmit={handleNovelCommentSubmit}
+              onDeleteComment={deleteComment}
             />
           )}
           {createError && (

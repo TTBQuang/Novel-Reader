@@ -125,3 +125,11 @@
     color: #007bff;
     cursor: pointer;
 }
+
+.forgot-password {
+    margin-top: 5px;
+    font-size: 16px;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+}

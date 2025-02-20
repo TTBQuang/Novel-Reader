@@ -5,10 +5,10 @@ import {
   clearTokens,
   refreshTokenAndGetUser,
 } from "../services/auth";
-import { AuthContext, AuthContextType } from "./AuthContext";
+import { UserContext, UserContextType } from "./UserContext";
 import { User } from "../models/User";
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     restoreSession();
   }, []);
 
-  const contextValue: AuthContextType = {
+  const contextValue: UserContextType = {
     user,
     setUser,
     isAuthenticated,
@@ -55,6 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 };

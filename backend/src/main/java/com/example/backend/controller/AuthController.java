@@ -9,6 +9,7 @@ import com.example.backend.util.GoogleTokenVerifierUtil;
 import com.example.backend.util.JwtUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,15 +25,27 @@ public class AuthController {
     private final GoogleTokenVerifierUtil GoogleTokenVerifierUtil;
 
     @PostMapping("/register/initiate")
-    public ResponseEntity<String> initiateRegistration(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<String> initiateRegistration(@Valid @RequestBody RegistrationRequest request) {
         authService.initiateRegistration(request.getUsername(), request.getPassword(), request.getEmail());
         return ResponseEntity.ok("Mã xác thực đã được gửi đến email của bạn");
     }
 
     @PostMapping("/register/verify")
-    public ResponseEntity<String> verifyOtp(@RequestBody OtpVerificationRequest request) {
+    public ResponseEntity<String> verifyOtpRegistration(@RequestBody OtpVerificationRequest request) {
         authService.verifyOtpAndRegisterUser(request.getEmail(), request.getOtp());
         return ResponseEntity.ok("Đăng ký thành công");
+    }
+
+    @PostMapping("/password/reset/initiate")
+    public ResponseEntity<String> initiatePasswordReset(@Valid @RequestBody PasswordResetRequest request) {
+        authService.initiatePasswordReset(request.getEmail());
+        return ResponseEntity.ok("Mã xác thực đã được gửi đến email của bạn");
+    }
+
+    @PostMapping("/password/reset/confirm")
+    public ResponseEntity<String> confirmPasswordReset(@RequestBody PasswordResetConfirmRequest request) {
+        authService.verifyOtpAndResetPassword(request.getEmail(), request.getOtp(), request.getNewPassword());
+        return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công");
     }
 
     @PostMapping("/login")

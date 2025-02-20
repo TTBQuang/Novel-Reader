@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import { User } from "../models/User";
 
-export interface AuthContextType {
+export interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   isAuthenticated: boolean;
@@ -9,6 +9,6 @@ export interface AuthContextType {
   isLoading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
+export const UserContext = createContext<UserContextType | undefined>(
   undefined
 );

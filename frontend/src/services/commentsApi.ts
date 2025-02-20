@@ -35,3 +35,7 @@ export const createComment = async (data: {
 
     return apiClient.post<Comment>('/comments', data, { requireAuth: true });
 };
+
+export const deleteComment = async (commentId: number): Promise<void> => {
+    return apiClient.delete<void>(`/comments/${commentId}`, { requireAuth: true });
+}

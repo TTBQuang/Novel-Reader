@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useRegister } from "../../hooks/useRegister";
-import { ToastContainer, toast } from "react-toastify";
+import { useInitiateRegistration } from "../../hooks/useInitiateRegistration";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./RegisterPage.module.css";
 
@@ -8,7 +8,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { formData, errors, isLoading, handleInputChange, handleSubmit } =
-    useRegister();
+    useInitiateRegistration();
 
   const handleBackToLogin = () => {
     if (location.state?.fromLogin) {
@@ -22,10 +22,7 @@ const RegisterPage = () => {
     e.preventDefault();
     const success = await handleSubmit();
     if (success) {
-      toast.success("Đăng ký thành công!");
-      setTimeout(() => {
-        handleBackToLogin();
-      }, 500);
+      navigate("/otp-verification", { state: { email: formData.email } });
     }
   };
 

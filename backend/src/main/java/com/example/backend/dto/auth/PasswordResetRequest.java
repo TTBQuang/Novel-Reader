@@ -6,11 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RegistrationRequest {
-    private String username;
-    private String password;
-
+public class PasswordResetRequest {
     @Email(message = "Địa chỉ email không hợp lệ")
     private String email;
 }
-

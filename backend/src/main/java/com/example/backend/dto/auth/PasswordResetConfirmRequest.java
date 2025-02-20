@@ -5,6 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RefreshTokenRequest {
-    private String refreshToken;
+public class PasswordResetConfirmRequest {
+    private String email;
+    private String otp;
+    private String newPassword;
 }

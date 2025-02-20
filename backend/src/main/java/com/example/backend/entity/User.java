@@ -45,18 +45,5 @@ public class User {
             this.createdAt = LocalDateTime.now();
         }
     }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", isAdmin=" + isAdmin +
-                ", isCommentBlocked=" + isCommentBlocked +
-                ", comments=" + comments +
-                '}';
-    }
 }
 

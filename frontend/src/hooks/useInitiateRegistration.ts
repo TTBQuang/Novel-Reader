@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { register } from '../services/auth';
+import { initiateRegistration } from '../services/auth';
 import { toast } from 'react-toastify';
 
 interface RegisterForm {
@@ -14,7 +14,7 @@ interface FormErrors {
     password?: string;
 }
 
-export const useRegister = () => {
+export const useInitiateRegistration = () => {
     const [formData, setFormData] = useState<RegisterForm>({
         username: '',
         email: '',
@@ -72,7 +72,8 @@ export const useRegister = () => {
 
         setIsLoading(true);
         try {
-            return register(formData.username, formData.password, formData.email);
+            await initiateRegistration(formData.username, formData.password, formData.email);
+            return true;
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra';
             toast.error(message);

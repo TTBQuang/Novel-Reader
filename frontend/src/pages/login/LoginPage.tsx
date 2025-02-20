@@ -113,11 +113,8 @@ const LoginPage = () => {
   }
 
   const handleBackToHome = () => {
-    if (location.state?.fromHome) {
-      navigate(-1);
-    } else {
-      navigate("/");
-    }
+    const from = location.state?.from || "/";
+    navigate(from);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -128,7 +125,8 @@ const LoginPage = () => {
 
     toast.success("Đăng nhập thành công!");
     setTimeout(() => {
-      navigate(-1);
+      const from = location.state?.from || "/";
+      navigate(from);
     }, 500);
   };
 
@@ -198,6 +196,12 @@ const LoginPage = () => {
           >
             {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
+
+          <div className={styles["forgot-password-container"]}>
+            <Link to="/forgot-password" className={styles["forgot-password"]}>
+              Quên mật khẩu?
+            </Link>
+          </div>
         </form>
 
         <div className={styles["register-link"]}>
