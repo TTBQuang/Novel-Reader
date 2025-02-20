@@ -18,10 +18,6 @@ public class ChapterController {
 
     @GetMapping("/{chapter-id}")
     public ResponseEntity<ChapterDetailDto> getChapterDetail(@PathVariable("chapter-id") long id) {
-        ChapterDetailDto chapter = chapterService.getChapterDetail(id);
-        if (chapter == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        return ResponseEntity.ok(chapter);
+        return ResponseEntity.ok(chapterService.getChapterDetail(id));
     }
 }

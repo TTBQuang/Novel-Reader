@@ -10,9 +10,9 @@ import java.util.Set;
 @Entity
 @Getter
 @Table(name = "chapters")
-@Setter
 public class Chapter {
     @Id
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

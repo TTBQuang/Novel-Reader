@@ -26,10 +26,6 @@ public class NovelController {
 
     @GetMapping("/{novel-id}")
     public ResponseEntity<NovelDetailDto> getNovelDetail(@PathVariable("novel-id") long id) {
-        NovelDetailDto novel = novelService.getNovelDetail(id);
-        if (novel == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(novel);
+        return ResponseEntity.ok(novelService.getNovelDetail(id));
     }
 }

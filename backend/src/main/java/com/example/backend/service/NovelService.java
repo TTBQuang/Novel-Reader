@@ -7,6 +7,7 @@ import com.example.backend.entity.Novel;
 import com.example.backend.enums.NovelStatus;
 import com.example.backend.repository.NovelRepository;
 import com.example.backend.util.ConverterUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -48,11 +49,8 @@ public class NovelService {
     }
 
     public NovelDetailDto getNovelDetail(long id) {
-        Novel novel = novelRepository.findById(id).orElse(null);
-        if (novel == null) {
-            return null;
-        }
-
-        return modelMapper.map(novel, NovelDetailDto.class);
+        return novelRepository.findById(id)
+                .map(novel -> modelMapper.map(novel, NovelDetailDto.class))
+                .orElseThrow(() -> new EntityNotFoundException("Novel not found with id: " + id));
     }
 }

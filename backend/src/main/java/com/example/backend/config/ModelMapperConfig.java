@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import com.example.backend.dto.chapter.ChapterDetailDto;
 import com.example.backend.dto.comment.CommentRequestDto;
 import com.example.backend.entity.Chapter;
 import com.example.backend.entity.Comment;
@@ -37,7 +38,20 @@ public class ModelMapperConfig {
                         chapter.setId(source.getChapterId());
                         destination.setChapter(chapter);
                     }
+                    return destination;
+                });
 
+        mapper.createTypeMap(Chapter.class, ChapterDetailDto.class)
+                .setPostConverter(context -> {
+                    Chapter source = context.getSource();
+                    ChapterDetailDto destination = context.getDestination();
+
+                    destination.setCommentCount(
+                            source.getComments() != null ? source.getComments().size() : 0
+                    );
+                    destination.setChapterGroupName(
+                            source.getChapterGroup() != null ? source.getChapterGroup().getName() : null
+                    );
                     return destination;
                 });
 
