@@ -4,6 +4,7 @@ import com.example.backend.dto.novel.NovelDetailDto;
 import com.example.backend.dto.novel.NovelGetterCriteria;
 import com.example.backend.dto.novel.NovelListItemDto;
 import com.example.backend.service.NovelService;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,8 @@ public class NovelController {
 
     @GetMapping()
     public ResponseEntity<Page<NovelListItemDto>> getNovels(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
             @ModelAttribute NovelGetterCriteria criteria) {
         Page<NovelListItemDto> novels = novelService.getNovels(page, size, criteria);
         return ResponseEntity.ok(novels);

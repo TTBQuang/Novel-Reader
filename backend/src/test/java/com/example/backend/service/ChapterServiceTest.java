@@ -4,6 +4,8 @@ import com.example.backend.dto.chapter.ChapterDetailDto;
 import com.example.backend.entity.Chapter;
 import com.example.backend.repository.ChapterRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +22,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ChapterServiceTest {
+class ChapterServiceTest {
+
     @Mock
     private ChapterRepository chapterRepository;
 
@@ -42,36 +45,43 @@ public class ChapterServiceTest {
         chapterDetailDto.setId(1L);
     }
 
-    @Test
-    void getChapterDetail_WhenChapterExists_ShouldReturnChapterDetailDto() {
-        when(chapterRepository.findById(eq(1L))).thenReturn(Optional.of(chapter));
-        when(modelMapper.map(chapter, ChapterDetailDto.class)).thenReturn(chapterDetailDto);
+    @Nested
+    @DisplayName("getChapterDetail Tests")
+    class GetChapterDetailTests {
 
-        ChapterDetailDto result = chapterService.getChapterDetail(1L);
+        @Test
+        void whenChapterExists_ShouldReturnChapterDetailDto() {
+            when(chapterRepository.findById(eq(1L))).thenReturn(Optional.of(chapter));
+            when(modelMapper.map(chapter, ChapterDetailDto.class)).thenReturn(chapterDetailDto);
 
-        assertEquals(chapterDetailDto.getId(), result.getId());
-        verify(chapterRepository, times(1)).findById(1L);
-        verify(modelMapper, times(1)).map(any(Chapter.class), eq(ChapterDetailDto.class));
-    }
+            ChapterDetailDto result = chapterService.getChapterDetail(1L);
 
-    @Test
-    void getChapterDetail_WhenChapterNotExists_ShouldThrowException() {
-        when(chapterRepository.findById(eq(1L))).thenReturn(Optional.empty());
+            assertEquals(chapterDetailDto.getId(), result.getId());
+            verify(chapterRepository, times(1)).findById(1L);
+            verify(modelMapper, times(1)).map(any(Chapter.class), eq(ChapterDetailDto.class));
+        }
 
-        assertThrows(RuntimeException.class, () -> chapterService.getChapterDetail(1L));
+        @Test
+        void whenChapterNotExists_ShouldThrowException() {
+            when(chapterRepository.findById(eq(1L))).thenReturn(Optional.empty());
 
-        verify(chapterRepository, times(1)).findById(1L);
-        verify(modelMapper, never()).map(any(), any());
-    }
+            assertThrows(RuntimeException.class, () -> chapterService.getChapterDetail(1L));
 
-    @Test
-    void getChapterDetail_WhenMappingFails_ShouldThrowException() {
-        when(chapterRepository.findById(eq(1L))).thenReturn(Optional.of(chapter));
-        when(modelMapper.map(any(Chapter.class), eq(ChapterDetailDto.class))).thenThrow(RuntimeException.class);
+            verify(chapterRepository, times(1)).findById(1L);
+            verify(modelMapper, never()).map(any(), any());
+        }
 
-        assertThrows(RuntimeException.class, () -> chapterService.getChapterDetail(1L));
+        @Test
+        void whenMappingFails_ShouldThrowException() {
+            when(chapterRepository.findById(eq(1L))).thenReturn(Optional.of(chapter));
+            when(modelMapper.map(any(Chapter.class), eq(ChapterDetailDto.class)))
+                    .thenThrow(RuntimeException.class);
 
-        verify(chapterRepository, times(1)).findById(1L);
-        verify(modelMapper, times(1)).map(any(Chapter.class), eq(ChapterDetailDto.class));
+            assertThrows(RuntimeException.class, () -> chapterService.getChapterDetail(1L));
+
+            verify(chapterRepository, times(1)).findById(1L);
+            verify(modelMapper, times(1)).map(any(Chapter.class), eq(ChapterDetailDto.class));
+        }
     }
 }
+

@@ -4,6 +4,8 @@ import com.example.backend.dto.genre.GenreDto;
 import com.example.backend.entity.Genre;
 import com.example.backend.repository.GenreRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,42 +54,50 @@ class GenreServiceTest {
         genreDto2.setId(2L);
     }
 
-    @Test
-    void getAllGenres_WhenGenresExist_ShouldReturnGenreDtoList() {
-        List<Genre> genres = Arrays.asList(genre1, genre2);
-        when(genreRepository.findAll()).thenReturn(genres);
-        when(modelMapper.map(genre1, GenreDto.class)).thenReturn(genreDto1);
-        when(modelMapper.map(genre2, GenreDto.class)).thenReturn(genreDto2);
+    @Nested
+    @DisplayName("getAllGenres Tests")
+    class GetAllGenresTests {
 
-        List<GenreDto> result = genreService.getAllGenres();
+        @Test
+        @DisplayName("When genres exist, should return GenreDto list")
+        void whenGenresExist_ShouldReturnGenreDtoList() {
+            List<Genre> genres = Arrays.asList(genre1, genre2);
+            when(genreRepository.findAll()).thenReturn(genres);
+            when(modelMapper.map(genre1, GenreDto.class)).thenReturn(genreDto1);
+            when(modelMapper.map(genre2, GenreDto.class)).thenReturn(genreDto2);
 
-        assertEquals(2, result.size());
-        assertEquals(genreDto1.getId(), result.get(0).getId());
-        assertEquals(genreDto2.getId(), result.get(1).getId());
-        verify(genreRepository, times(1)).findAll();
-        verify(modelMapper, times(2)).map(any(Genre.class), eq(GenreDto.class));
-    }
+            List<GenreDto> result = genreService.getAllGenres();
 
-    @Test
-    void getAllGenres_WhenNoGenresExist_ShouldReturnEmptyList() {
-        when(genreRepository.findAll()).thenReturn(Collections.emptyList());
+            assertEquals(2, result.size());
+            assertEquals(genreDto1.getId(), result.get(0).getId());
+            assertEquals(genreDto2.getId(), result.get(1).getId());
+            verify(genreRepository, times(1)).findAll();
+            verify(modelMapper, times(2)).map(any(Genre.class), eq(GenreDto.class));
+        }
 
-        List<GenreDto> result = genreService.getAllGenres();
+        @Test
+        @DisplayName("When no genres exist, should return empty list")
+        void whenNoGenresExist_ShouldReturnEmptyList() {
+            when(genreRepository.findAll()).thenReturn(Collections.emptyList());
 
-        assertTrue(result.isEmpty());
-        verify(genreRepository, times(1)).findAll();
-        verify(modelMapper, never()).map(any(), any());
-    }
+            List<GenreDto> result = genreService.getAllGenres();
 
-    @Test
-    void getAllGenres_WhenMappingFails_ShouldThrowException() {
-        List<Genre> genres = Collections.singletonList(genre1);
-        when(genreRepository.findAll()).thenReturn(genres);
-        when(modelMapper.map(any(), any())).thenThrow(new RuntimeException());
+            assertTrue(result.isEmpty());
+            verify(genreRepository, times(1)).findAll();
+            verify(modelMapper, never()).map(any(), any());
+        }
 
-        assertThrows(RuntimeException.class, () -> genreService.getAllGenres());
+        @Test
+        @DisplayName("When mapping fails, should throw exception")
+        void whenMappingFails_ShouldThrowException() {
+            List<Genre> genres = Collections.singletonList(genre1);
+            when(genreRepository.findAll()).thenReturn(genres);
+            when(modelMapper.map(any(), any())).thenThrow(new RuntimeException());
 
-        verify(genreRepository, times(1)).findAll();
-        verify(modelMapper, times(1)).map(any(), any());
+            assertThrows(RuntimeException.class, () -> genreService.getAllGenres());
+
+            verify(genreRepository, times(1)).findAll();
+            verify(modelMapper, times(1)).map(any(), any());
+        }
     }
 }

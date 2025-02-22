@@ -4,6 +4,7 @@ import com.example.backend.dto.comment.CommentRequestDto;
 import com.example.backend.dto.comment.CommentResponseDto;
 import com.example.backend.service.CommentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,8 @@ public class CommentController {
     @GetMapping("/novel/{novel-id}")
     public ResponseEntity<Page<CommentResponseDto>> getCommentsByNovelId(
             @PathVariable("novel-id") long novelId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size) {
         Page<CommentResponseDto> comments = commentService.getCommentsByNovelId(page, size, novelId);
         return ResponseEntity.ok(comments);
     }
@@ -29,8 +30,8 @@ public class CommentController {
     @GetMapping("/chapter/{chapter-id}")
     public ResponseEntity<Page<CommentResponseDto>> getCommentsByChapterId(
             @PathVariable("chapter-id") long chapterId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size) {
         Page<CommentResponseDto> comments = commentService.getCommentsByChapterId(page, size, chapterId);
         return ResponseEntity.ok(comments);
     }

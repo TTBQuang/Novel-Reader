@@ -5,6 +5,8 @@ import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.service.ChapterService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class ChapterControllerTest {
+class ChapterControllerTest {
 
     private MockMvc mockMvc;
 
@@ -45,26 +47,31 @@ public class ChapterControllerTest {
         chapterDetailDto.setContent("Content 1");
     }
 
-    @Test
-    void getChapterDetail_ShouldReturnChapterDetailDto() throws Exception {
-        when(chapterService.getChapterDetail(eq(1L))).thenReturn(chapterDetailDto);
+    @Nested
+    @DisplayName("GetChapterDetail Tests")
+    class GetChapterDetailTests {
 
-        mockMvc.perform(get("/chapters/{chapter-id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.chapterGroupName").value("Group1"))
-                .andExpect(jsonPath("$.content").value("Content 1"));
+        @Test
+        void whenChapterFound_ShouldReturnChapterDetailDto() throws Exception {
+            when(chapterService.getChapterDetail(eq(1L))).thenReturn(chapterDetailDto);
 
-        verify(chapterService, times(1)).getChapterDetail(eq(1L));
-    }
+            mockMvc.perform(get("/chapters/{chapter-id}", 1L)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(1))
+                    .andExpect(jsonPath("$.chapterGroupName").value("Group1"))
+                    .andExpect(jsonPath("$.content").value("Content 1"));
 
-    @Test
-    void getChapterDetail_WhenChapterNotFound_ShouldReturnNotFound() throws Exception {
-        when(chapterService.getChapterDetail(eq(1L)))
-                .thenThrow(new EntityNotFoundException("Chapter not found"));
+            verify(chapterService, times(1)).getChapterDetail(eq(1L));
+        }
 
-        mockMvc.perform(get("/chapters/{chapter-id}", 1L))
-                .andExpect(status().isNotFound());
+        @Test
+        void whenChapterNotFound_ShouldReturnNotFound() throws Exception {
+            when(chapterService.getChapterDetail(eq(1L)))
+                    .thenThrow(new EntityNotFoundException("Chapter not found"));
+
+            mockMvc.perform(get("/chapters/{chapter-id}", 1L))
+                    .andExpect(status().isNotFound());
+        }
     }
 }
