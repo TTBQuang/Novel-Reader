@@ -1,7 +1,9 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "chapter_groups")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChapterGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

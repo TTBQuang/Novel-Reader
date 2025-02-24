@@ -1,7 +1,9 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Table(name = "chapters")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Chapter {
     @Id
     @Setter
@@ -20,10 +24,7 @@ public class Chapter {
     @ManyToOne(fetch = FetchType.LAZY)
     private ChapterGroup chapterGroup;
 
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private String content;
 
     @Column(name = "words_count", nullable = false)

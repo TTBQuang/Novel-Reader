@@ -1,7 +1,5 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.novel.NovelGetterCriteria;
-import com.example.backend.dto.novel.NovelListItemDto;
 import com.example.backend.dto.user.UserDto;
 import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.service.UserService;

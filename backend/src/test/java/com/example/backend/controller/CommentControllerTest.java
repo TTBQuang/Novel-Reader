@@ -5,6 +5,7 @@ import com.example.backend.dto.comment.CommentResponseDto;
 import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -26,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static io.lettuce.core.KillArgs.Builder.user;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -172,15 +173,17 @@ class CommentControllerTest {
         }
 
         @Test
-        void whenInvalidPageOrSizeForChapter_ShouldReturnBadRequest() throws Exception {
-            long chapterId = 1L;
-            mockMvc.perform(get("/comments/chapter/{chapter-id}", chapterId)
+        void whenInvalidPageForChapter_ShouldReturnBadRequest() throws Exception {
+            mockMvc.perform(get("/comments/chapter/{chapter-id}", 1L)
                             .param("page", "-1")
                             .param("size", "10"))
                     .andExpect(status().isBadRequest());
             verify(commentService, never()).getCommentsByChapterId(anyInt(), anyInt(), anyLong());
+        }
 
-            mockMvc.perform(get("/comments/chapter/{chapter-id}", chapterId)
+        @Test
+        void whenInvalidSizeForChapter_ShouldReturnBadRequest() throws Exception {
+            mockMvc.perform(get("/comments/chapter/{chapter-id}", 1L)
                             .param("page", "0")
                             .param("size", "0"))
                     .andExpect(status().isBadRequest());
@@ -193,39 +196,54 @@ class CommentControllerTest {
     @DisplayName("DeleteComment Tests")
     class DeleteCommentTests {
 
-//        @Test
-//        void whenCommentExists_ShouldDeleteCommentAndReturnNoContent() throws Exception {
-//            long commentId = 1L;
-//            doNothing().when(commentService).deleteComment(commentId);
-//
-//            mockMvc.perform(delete("/comments/{comment-id}", commentId)
-//                            .with(user("admin").roles("ADMIN")))
-//                    .andExpect(status().isNoContent());
-//
-//            verify(commentService).deleteComment(commentId);
-//        }
+        @Test
+        void whenCommentExists_ShouldDeleteCommentAndReturnNoContent() throws Exception {
+            long commentId = 1L;
+            doNothing().when(commentService).deleteComment(commentId);
+
+            mockMvc.perform(delete("/comments/{comment-id}", commentId)
+                            .with(SecurityMockMvcRequestPostProcessors.user("admin")
+                                    .roles("ADMIN")))
+                    .andExpect(status().isNoContent());
+
+            verify(commentService).deleteComment(commentId);
+        }
+
+        @Test
+        void whenCommentDoesNotExist_ShouldReturnNotFound() throws Exception {
+            long commentId = 1L;
+            doThrow(new EntityNotFoundException("Comment not found")).when(commentService).deleteComment(commentId);
+
+            mockMvc.perform(delete("/comments/{comment-id}", commentId)
+                            .with(SecurityMockMvcRequestPostProcessors.user("admin")
+                                    .roles("ADMIN")))
+                    .andExpect(status().isNotFound());
+
+            verify(commentService).deleteComment(commentId);
+        }
     }
 
     @Nested
     @DisplayName("InsertComment Tests")
     class InsertCommentTests {
 
-//        @Test
-//        void whenInsertComment_ShouldReturnCreatedComment() throws Exception {
-//            CommentRequestDto requestDto = createCommentRequestDto();
-//            CommentResponseDto responseDto = createCommentResponseDto(1L, "Nice read!");
-//            when(commentService.insertComment(any(CommentRequestDto.class))).thenReturn(responseDto);
-//
-//            mockMvc.perform(post("/comments")
-//                            .with(user("commenter").authorities(new SimpleGrantedAuthority("COMMENT")))
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(objectMapper.writeValueAsString(requestDto)))
-//                    .andExpect(status().isCreated())
-//                    .andExpect(jsonPath("$.id").value(1))
-//                    .andExpect(jsonPath("$.content").value("Nice read!"));
-//
-//            verify(commentService).insertComment(any(CommentRequestDto.class));
-//        }
+        @Test
+        void whenInsertComment_ShouldReturnCreatedComment() throws Exception {
+            CommentRequestDto requestDto = createCommentRequestDto();
+            CommentResponseDto responseDto = createCommentResponseDto(1L, "Nice read!");
+            when(commentService.insertComment(any(CommentRequestDto.class))).thenReturn(responseDto);
+
+            mockMvc.perform(post("/comments")
+                            .with(SecurityMockMvcRequestPostProcessors.user("commenter")
+                                    .authorities(new SimpleGrantedAuthority("COMMENT")))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(requestDto)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").value(1))
+                    .andExpect(jsonPath("$.content").value("Nice read!"));
+
+            verify(commentService).insertComment(any(CommentRequestDto.class));
+        }
     }
 
     private CommentResponseDto createCommentResponseDto(Long id, String content) {
@@ -236,11 +254,7 @@ class CommentControllerTest {
     }
 
     private CommentRequestDto createCommentRequestDto() {
-        CommentRequestDto dto = new CommentRequestDto();
-        dto.setContent("Content");
-        dto.setNovelId(1L);
-        dto.setChapterId(null);
-        return dto;
+        return new CommentRequestDto(1L, null, "Content");
     }
 }
 

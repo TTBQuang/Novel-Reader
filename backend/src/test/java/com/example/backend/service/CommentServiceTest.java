@@ -62,8 +62,7 @@ class CommentServiceTest {
         commentResponseDto.setId(1L);
         commentResponseDto.setContent("Test comment");
 
-        commentRequestDto = new CommentRequestDto();
-        commentRequestDto.setContent("Test comment");
+        commentRequestDto = new CommentRequestDto(1L, null, "content");
 
         commentPage = new PageImpl<>(Collections.singletonList(comment));
     }
