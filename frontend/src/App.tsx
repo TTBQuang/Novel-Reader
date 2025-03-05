@@ -7,6 +7,7 @@ import ChapterDetailPage from "./pages/chapter-detail/ChapterDetailPage";
 import UserManagementPage from "./pages/user-management/UserManagementPage";
 import OTPVerificationPage from "./pages/otp-verification/OTPVerificationPage";
 import ForgotPasswordPage from "./pages/forgot-password/ForgotPasswordPage";
+import UserDetailPage from "./pages/user-detail/UserDetailPage";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
           path="/novel/:novelId/chapter/:chapterId"
           element={<ChapterDetailPage />}
         />
+        <Route path="/user/:userId" element={<UserDetailPage />} />
         <Route path="/admin/users" element={<UserManagementPage />} />
       </Routes>
     </Router>

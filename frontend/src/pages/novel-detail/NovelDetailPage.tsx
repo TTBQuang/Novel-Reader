@@ -68,6 +68,10 @@ const NovelDetailPage = () => {
     }
   };
 
+  const navigateToProfile = (userId: number) => () => {
+    navigate(`/user/${userId}`);
+  };
+
   if (isLoadingNovelDetail) {
     return <div>Loading...</div>;
   }
@@ -110,10 +114,12 @@ const NovelDetailPage = () => {
           </div>
           <div className={styles["avatar-row"]}>
             <div className={styles["avatar"]}>
-              <img src={avatar} alt="Avatar" />
+              <img src={novel.poster.avatar ?? avatar} alt="Avatar" />
             </div>
             <div className={styles["poster-name"]}>
-              <span>{novel.poster.username}</span>
+              <span onClick={navigateToProfile(novel.poster.id)}>
+                {novel.poster.displayName}
+              </span>
             </div>
           </div>
 

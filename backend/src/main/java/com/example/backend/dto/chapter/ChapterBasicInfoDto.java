@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChapterListItemDto {
+public class ChapterBasicInfoDto {
     private Long id;
     private String name;
     private double chapterOrder;

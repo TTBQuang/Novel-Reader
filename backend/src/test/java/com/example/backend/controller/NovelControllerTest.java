@@ -1,12 +1,12 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.chapter.ChapterListItemDto;
+import com.example.backend.dto.chapter.ChapterBasicInfoDto;
 import com.example.backend.dto.chaptergroup.ChapterGroupDto;
 import com.example.backend.dto.genre.GenreDto;
 import com.example.backend.dto.novel.NovelDetailDto;
 import com.example.backend.dto.novel.NovelGetterCriteria;
 import com.example.backend.dto.novel.NovelListItemDto;
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserDetailDto;
 import com.example.backend.enums.NovelSortOption;
 import com.example.backend.enums.NovelStatus;
 import com.example.backend.exception.GlobalExceptionHandler;
@@ -217,16 +217,16 @@ public class NovelControllerTest {
         return dto;
     }
 
-    private UserDto createTestUser() {
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setEmail("user@example.com");
-        userDto.setAdmin(false);
-        return userDto;
+    private UserDetailDto createTestUser() {
+        UserDetailDto userDetailDto = new UserDetailDto();
+        userDetailDto.setId(1L);
+        userDetailDto.setEmail("user@example.com");
+        userDetailDto.setAdmin(false);
+        return userDetailDto;
     }
 
     private List<ChapterGroupDto> createTestChapterGroups() {
-        ChapterListItemDto chapter1 = new ChapterListItemDto();
+        ChapterBasicInfoDto chapter1 = new ChapterBasicInfoDto();
         chapter1.setId(1L);
         chapter1.setCreationDate(LocalDateTime.of(2024, 2, 20, 10, 0));
 

@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -132,6 +133,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handlePasswordResetException(PasswordResetException ex) {
         System.out.println(ex.toString());
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
+        System.out.println(ex.toString());
+        return buildResponse(HttpStatus.FORBIDDEN, "Không có quyền truy cập.");
     }
 
     @ExceptionHandler(Exception.class)

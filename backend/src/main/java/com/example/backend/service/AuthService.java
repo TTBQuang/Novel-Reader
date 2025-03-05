@@ -11,6 +11,8 @@ import com.example.backend.exception.UserRegistrationException;
 import com.example.backend.repository.OtpVerificationRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.util.JwtUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -213,5 +215,14 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateAccessToken(user);
 
         return new TokenResponse(newAccessToken, refreshToken);
+    }
+
+    public String createFirebaseCustomToken(String userId) {
+        try {
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            return firebaseAuth.createCustomToken(userId);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException("Không thể tạo Firebase token", e);
+        }
     }
 }

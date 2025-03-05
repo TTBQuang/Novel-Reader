@@ -2,9 +2,11 @@ package com.example.backend.config;
 
 import com.example.backend.dto.chapter.ChapterDetailDto;
 import com.example.backend.dto.comment.CommentRequestDto;
+import com.example.backend.dto.user.UserDetailDto;
 import com.example.backend.entity.Chapter;
 import com.example.backend.entity.Comment;
 import com.example.backend.entity.Novel;
+import com.example.backend.entity.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
@@ -46,12 +48,26 @@ public class ModelMapperConfig {
                     Chapter source = context.getSource();
                     ChapterDetailDto destination = context.getDestination();
 
-                    destination.setCommentCount(
-                            source.getComments() != null ? source.getComments().size() : 0
+                    destination.setCommentCount(source.getComments().size());
+                    destination.setChapterGroupName(source.getChapterGroup().getName());
+                    return destination;
+                });
+
+        mapper.createTypeMap(User.class, UserDetailDto.class)
+                .setPostConverter(context -> {
+                    User source = context.getSource();
+                    UserDetailDto destination = context.getDestination();
+
+                    destination.setCommentsCount(source.getComments().size());
+
+                    destination.setChaptersCount(
+                            source.getOwnNovels().stream()
+                                    .mapToInt(novel -> novel.getChapterGroups().stream()
+                                            .mapToInt(chapterGroup -> chapterGroup.getChapters().size())
+                                            .sum()
+                                    ).sum()
                     );
-                    destination.setChapterGroupName(
-                            source.getChapterGroup() != null ? source.getChapterGroup().getName() : null
-                    );
+
                     return destination;
                 });
 

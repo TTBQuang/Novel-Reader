@@ -97,6 +97,11 @@
     font-weight: bold;
     font-size: 14px;
     margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.comment-name:hover {
+    color: #3ea692;
 }
 
 .comment-text {

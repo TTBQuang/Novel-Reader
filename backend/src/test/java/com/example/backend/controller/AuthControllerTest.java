@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.auth.*;
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserBasicInfoDto;
 import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.service.AuthService;
 import com.example.backend.service.TokenBlacklistService;
@@ -186,11 +186,11 @@ class AuthControllerTest {
         void whenValidCredentials_shouldReturnTokensAndUserData() throws Exception {
             LoginRequest request = new LoginRequest("testuser", "password123");
             TokenResponse tokens = new TokenResponse("access-token", "refresh-token");
-            UserDto userDto = createUserDto();
+            UserBasicInfoDto userBasicInfoDto = createUserBasicInfoDto();
 
             when(authService.loginUser(request.getUsername(), request.getPassword())).thenReturn(tokens);
             when(jwtUtil.getSubject(tokens.getAccessToken())).thenReturn("1");
-            when(userService.getUserById(1L)).thenReturn(userDto);
+            when(userService.getUserBasicInfoById(1L)).thenReturn(userBasicInfoDto);
 
             mockMvc.perform(post("/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -199,12 +199,11 @@ class AuthControllerTest {
                     .andExpect(jsonPath("$.token.accessToken").value("access-token"))
                     .andExpect(jsonPath("$.token.refreshToken").value("refresh-token"))
                     .andExpect(jsonPath("$.user.id").value(1))
-                    .andExpect(jsonPath("$.user.email").value("test@example.com"))
-                    .andExpect(jsonPath("$.user.username").value("testuser"));
+                    .andExpect(jsonPath("$.user.email").value("test@example.com"));
 
             verify(authService).loginUser(request.getUsername(), request.getPassword());
             verify(jwtUtil).getSubject(tokens.getAccessToken());
-            verify(userService).getUserById(1L);
+            verify(userService).getUserBasicInfoById(1L);
         }
 
         @Test
@@ -233,12 +232,12 @@ class AuthControllerTest {
 
             UserGoogleProfile googleProfile = new UserGoogleProfile("test@example.com", "testuser");
             TokenResponse tokens = new TokenResponse("access-token", "refresh-token");
-            UserDto userDto = createUserDto();
+            UserBasicInfoDto userBasicInfoDto = createUserBasicInfoDto();
 
             when(googleTokenVerifierUtil.getUserInfoFromIdToken(request.getIdToken())).thenReturn(googleProfile);
             when(authService.loginUserGoogle(googleProfile)).thenReturn(tokens);
             when(jwtUtil.getSubject(tokens.getAccessToken())).thenReturn("1");
-            when(userService.getUserById(1L)).thenReturn(userDto);
+            when(userService.getUserBasicInfoById(1L)).thenReturn(userBasicInfoDto);
 
             mockMvc.perform(post("/auth/login-google")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -252,7 +251,7 @@ class AuthControllerTest {
             verify(googleTokenVerifierUtil).getUserInfoFromIdToken(request.getIdToken());
             verify(authService).loginUserGoogle(googleProfile);
             verify(jwtUtil).getSubject(tokens.getAccessToken());
-            verify(userService).getUserById(1L);
+            verify(userService).getUserBasicInfoById(1L);
         }
 
         @Test
@@ -280,11 +279,11 @@ class AuthControllerTest {
         void whenValidRefreshToken_shouldReturnNewTokens() throws Exception {
             RefreshTokenRequest request = new RefreshTokenRequest("valid-refresh-token");
             TokenResponse newTokens = new TokenResponse("new-access-token", "new-refresh-token");
-            UserDto userDto = createUserDto();
+            UserBasicInfoDto userBasicInfoDto = createUserBasicInfoDto();
 
             when(authService.refreshAccessToken(request.getRefreshToken())).thenReturn(newTokens);
             when(jwtUtil.getSubject(newTokens.getAccessToken())).thenReturn("1");
-            when(userService.getUserById(1L)).thenReturn(userDto);
+            when(userService.getUserBasicInfoById(1L)).thenReturn(userBasicInfoDto);
 
             mockMvc.perform(post("/auth/refresh")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -296,7 +295,7 @@ class AuthControllerTest {
 
             verify(authService).refreshAccessToken(request.getRefreshToken());
             verify(jwtUtil).getSubject(newTokens.getAccessToken());
-            verify(userService).getUserById(1L);
+            verify(userService).getUserBasicInfoById(1L);
         }
 
         @Test
@@ -365,12 +364,10 @@ class AuthControllerTest {
         }
     }
 
-    private UserDto createUserDto() {
-        UserDto dto = new UserDto();
+    private UserBasicInfoDto createUserBasicInfoDto() {
+        UserBasicInfoDto dto = new UserBasicInfoDto();
         dto.setId(1L);
         dto.setEmail("test@example.com");
-        dto.setUsername("testuser");
-        dto.setAdmin(false);
         dto.setCommentBlocked(false);
         return dto;
     }

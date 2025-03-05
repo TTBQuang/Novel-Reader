@@ -5,6 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import avatar from "../../assets/avatar.jpg";
 import { Comment } from "../../models/Comment";
 import { FaEllipsisV, FaSpinner } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -33,6 +34,8 @@ const CommentSection = ({
   const [deletingCommentId, setDeletingCommentId] = useState<number | null>(
     null
   );
+  const navigate = useNavigate();
+
   const handleCommentSubmit = () => {
     if (commentText.trim() && onSubmit) {
       onSubmit(commentText);
@@ -52,6 +55,10 @@ const CommentSection = ({
 
   const handleIconClick = (id: number) => {
     setOpenPopupId(openPopupId === id ? null : id);
+  };
+
+  const navigateToProfile = (userId: number) => {
+    navigate(`/user/${userId}`);
   };
 
   if (isLoadingComments) {
@@ -95,8 +102,11 @@ const CommentSection = ({
               className={styles["comment-avatar"]}
             />
             <div className={styles["comment-text-container"]}>
-              <strong className={styles["comment-name"]}>
-                {comment.user.username}
+              <strong
+                className={styles["comment-name"]}
+                onClick={() => navigateToProfile(comment.user.id)}
+              >
+                {comment.user.displayName}
               </strong>
               <div className={styles["comment-text"]}>{comment.content}</div>
               <div className={styles["comment-time"]}>

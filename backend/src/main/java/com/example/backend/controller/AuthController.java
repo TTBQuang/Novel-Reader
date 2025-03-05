@@ -1,9 +1,9 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.auth.*;
-import com.example.backend.dto.user.UserDto;
-import com.example.backend.service.TokenBlacklistService;
+import com.example.backend.dto.user.UserBasicInfoDto;
 import com.example.backend.service.AuthService;
+import com.example.backend.service.TokenBlacklistService;
 import com.example.backend.service.UserService;
 import com.example.backend.util.GoogleTokenVerifierUtil;
 import com.example.backend.util.JwtUtil;
@@ -53,9 +53,9 @@ public class AuthController {
         TokenResponse tokens = authService.loginUser(request.getUsername(), request.getPassword());
 
         long userId = Long.parseLong(jwtUtil.getSubject(tokens.getAccessToken()));
-        UserDto userDto = userService.getUserById(userId);
+        UserBasicInfoDto userBasicInfoDto = userService.getUserBasicInfoById(userId);
 
-        return ResponseEntity.ok(new LoginResponse(tokens, userDto));
+        return ResponseEntity.ok(new LoginResponse(tokens, userBasicInfoDto));
     }
 
     @PostMapping("/login-google")
@@ -64,9 +64,9 @@ public class AuthController {
         TokenResponse tokens = authService.loginUserGoogle(userGoogleProfile);
 
         long userId = Long.parseLong(jwtUtil.getSubject(tokens.getAccessToken()));
-        UserDto userDto = userService.getUserById(userId);
+        UserBasicInfoDto userBasicInfoDto = userService.getUserBasicInfoById(userId);
 
-        return ResponseEntity.ok(new LoginResponse(tokens, userDto));
+        return ResponseEntity.ok(new LoginResponse(tokens, userBasicInfoDto));
     }
 
     @PostMapping("/refresh")
@@ -75,9 +75,9 @@ public class AuthController {
         TokenResponse tokens = authService.refreshAccessToken(refreshToken);
 
         long userId = Long.parseLong(jwtUtil.getSubject(tokens.getAccessToken()));
-        UserDto userDto = userService.getUserById(userId);
+        UserBasicInfoDto userBasicInfoDto = userService.getUserBasicInfoById(userId);
 
-        return ResponseEntity.ok(new LoginResponse(tokens, userDto));
+        return ResponseEntity.ok(new LoginResponse(tokens, userBasicInfoDto));
     }
 
     @SecurityRequirement(name = "bearerAuth")
@@ -93,5 +93,21 @@ public class AuthController {
         tokenBlacklistService.blacklistToken(refreshTokenRequest.getRefreshToken());
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/firebase-token")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<FirebaseTokenResponse> getFirebaseToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Authorization header không hợp lệ");
+        }
+
+        String accessToken = authHeader.substring(7);
+        String userId = jwtUtil.getSubject(accessToken);
+
+        String firebaseToken = authService.createFirebaseCustomToken(userId);
+
+        return ResponseEntity.ok(new FirebaseTokenResponse(firebaseToken));
     }
 }

@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "./context/ThemeProvider.tsx";
 import { UserProvider } from "./context/UserProvider.tsx";
+import "../src/config/firebaseConfig.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

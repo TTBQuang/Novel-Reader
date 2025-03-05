@@ -1,6 +1,6 @@
 package com.example.backend.dto.chaptergroup;
 
-import com.example.backend.dto.chapter.ChapterListItemDto;
+import com.example.backend.dto.chapter.ChapterBasicInfoDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,5 +14,5 @@ public class ChapterGroupDto {
     private Long id;
     private String name;
     private double groupOrder;
-    private List<ChapterListItemDto> chapters;
+    private List<ChapterBasicInfoDto> chapters;
 }

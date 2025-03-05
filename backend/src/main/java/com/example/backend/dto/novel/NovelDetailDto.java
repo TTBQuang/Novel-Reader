@@ -2,7 +2,7 @@ package com.example.backend.dto.novel;
 
 import com.example.backend.dto.chaptergroup.ChapterGroupDto;
 import com.example.backend.dto.genre.GenreDto;
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserDetailDto;
 import com.example.backend.enums.NovelStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class NovelDetailDto {
     private Long id;
-    private UserDto poster;
+    private UserDetailDto poster;
     private List<ChapterGroupDto> chapterGroups;
     private String name;
     private String author;
@@ -26,6 +26,7 @@ public class NovelDetailDto {
     private String summary;
     private NovelStatus status;
     private long wordsCount;
+    private LocalDateTime creationDate;
     private LocalDateTime lastUpdateDate;
     private Set<GenreDto> genres;
 }

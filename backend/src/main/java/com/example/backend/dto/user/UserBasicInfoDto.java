@@ -7,10 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserDto {
+public class UserBasicInfoDto {
     private Long id;
     private String email;
     private String username;
-    private boolean isAdmin;
     private boolean isCommentBlocked;
+    private String displayName;
+    private String avatar;
 }

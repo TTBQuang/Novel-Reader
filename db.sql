@@ -6,6 +6,9 @@ CREATE TABLE users (
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255),
+    display_name VARCHAR(255) NOT NULL,
+    avatar VARCHAR(255),
+    cover_image VARCHAR(255),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     is_comment_blocked BOOLEAN NOT NULL DEFAULT FALSE

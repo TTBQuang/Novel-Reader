@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserDetailDto;
+import com.example.backend.dto.user.UserBasicInfoDto;
 import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -57,12 +59,12 @@ class UserControllerTest {
             int page = 0;
             int size = 10;
             String keyword = "test";
-            List<UserDto> userList = Arrays.asList(
-                    createUserDto(1L, "test@email.com", "testUser"),
-                    createUserDto(2L, "test2@email.com", "testUser2")
+            List<UserBasicInfoDto> userList = Arrays.asList(
+                    createUserListItemDto(1L, "test@email.com", "testUser"),
+                    createUserListItemDto(2L, "test2@email.com", "testUser2")
             );
             Pageable pageable = PageRequest.of(0, 10);
-            Page<UserDto> userPage = new PageImpl<>(userList, pageable, 0);
+            Page<UserBasicInfoDto> userPage = new PageImpl<>(userList, pageable, 0);
             when(userService.getUsers(page, size, keyword)).thenReturn(userPage);
 
             mockMvc.perform(get("/users")
@@ -82,7 +84,7 @@ class UserControllerTest {
         @Test
         void whenUsersNotFound_ShouldReturnEmptyPageWhenNoUsers() throws Exception {
             Pageable pageable = PageRequest.of(0, 10);
-            Page<UserDto> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+            Page<UserBasicInfoDto> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
             when(userService.getUsers(0, 10, null)).thenReturn(emptyPage);
 
             mockMvc.perform(get("/users"))
@@ -147,12 +149,45 @@ class UserControllerTest {
         }
     }
 
-    private UserDto createUserDto(Long id, String email, String username) {
-        UserDto dto = new UserDto();
+    @Nested
+    @DisplayName("getUserPublicInfo Tests")
+    class GetUserPublicInfoTest {
+
+        @Test
+        void whenUserFound_ShouldReturnUserDto() throws Exception {
+            Long userId = 1L;
+            UserDetailDto userDetailDto = createUserDetailDto(userId);
+            when(userService.getUserDetailById(userId)).thenReturn(userDetailDto);
+
+            mockMvc.perform(get("/users/{userId}", userId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(userId));
+            verify(userService).getUserDetailById(userId);
+        }
+
+        @Test
+        void whenUserNotFound_ShouldReturn404() {
+            long userId = 999L;
+            when(userService.getUserDetailById(userId)).thenThrow(new EntityNotFoundException("User not found with id: " + userId));
+
+            assertThrows(EntityNotFoundException.class, () -> userController.getUserPublicInfo(userId));
+            verify(userService, times(1)).getUserDetailById(userId);
+        }
+    }
+
+    private UserBasicInfoDto createUserListItemDto(Long id, String email, String username) {
+        UserBasicInfoDto dto = new UserBasicInfoDto();
         dto.setId(id);
         dto.setEmail(email);
         dto.setUsername(username);
-        dto.setAdmin(false);
+        dto.setCommentBlocked(false);
+        return dto;
+    }
+
+    private UserDetailDto createUserDetailDto(Long id) {
+        UserDetailDto dto = new UserDetailDto();
+        dto.setId(id);
+        dto.setEmail("test@email.com");
         dto.setCommentBlocked(false);
         return dto;
     }

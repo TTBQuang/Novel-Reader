@@ -1,3 +1,4 @@
+import { FirebaseToken } from "../models/FirebaseToken";
 import { LoginResponse } from "../models/LoginResponse";
 import { apiClient } from "./apiClient";
 
@@ -105,4 +106,8 @@ export const clearTokens = () => {
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+};
+
+export const fetchFirebaseToken = async () => {
+    return apiClient.get<FirebaseToken>('/auth/firebase-token', { requireAuth: true });
 };

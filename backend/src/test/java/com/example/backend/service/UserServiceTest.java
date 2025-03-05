@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserDetailDto;
+import com.example.backend.dto.user.UserBasicInfoDto;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,23 +40,14 @@ class UserServiceTest {
     private UserService userService;
 
     private User user;
-    private UserDto userDto;
+    private UserDetailDto userDetailDto;
+    private UserBasicInfoDto userBasicInfoDto;
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setId(1L);
-        user.setEmail("test@email.com");
-        user.setUsername("testUser");
-        user.setIsAdmin(false);
-        user.setIsCommentBlocked(false);
-
-        userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setEmail("test@email.com");
-        userDto.setUsername("testUser");
-        userDto.setAdmin(false);
-        userDto.setCommentBlocked(false);
+        user = createUser();
+        userDetailDto = createUserDetailDto();
+        userBasicInfoDto = createUserListItemDto();
     }
 
     @Nested
@@ -68,13 +60,13 @@ class UserServiceTest {
             Page<User> userPage = new PageImpl<>(Collections.singletonList(user));
 
             when(userRepository.findByIsAdminFalse(pageable)).thenReturn(userPage);
-            when(modelMapper.map(user, UserDto.class)).thenReturn(userDto);
+            when(modelMapper.map(user, UserBasicInfoDto.class)).thenReturn(userBasicInfoDto);
 
-            Page<UserDto> result = userService.getUsers(0, 10, null);
+            Page<UserBasicInfoDto> result = userService.getUsers(0, 10, null);
 
             assertEquals(1, result.getTotalElements());
             verify(userRepository).findByIsAdminFalse(pageable);
-            verify(modelMapper).map(any(User.class), eq(UserDto.class));
+            verify(modelMapper).map(any(User.class), eq(UserBasicInfoDto.class));
         }
 
         @Test
@@ -84,13 +76,13 @@ class UserServiceTest {
             Page<User> userPage = new PageImpl<>(Collections.singletonList(user));
 
             when(userRepository.searchByKeyword(keyword, pageable)).thenReturn(userPage);
-            when(modelMapper.map(user, UserDto.class)).thenReturn(userDto);
+            when(modelMapper.map(user, UserBasicInfoDto.class)).thenReturn(userBasicInfoDto);
 
-            Page<UserDto> result = userService.getUsers(0, 10, keyword);
+            Page<UserBasicInfoDto> result = userService.getUsers(0, 10, keyword);
 
             assertEquals(1, result.getTotalElements());
             verify(userRepository).searchByKeyword(keyword, pageable);
-            verify(modelMapper).map(any(User.class), eq(UserDto.class));
+            verify(modelMapper).map(any(User.class), eq(UserBasicInfoDto.class));
         }
 
         @Test
@@ -99,14 +91,14 @@ class UserServiceTest {
             Page<User> userPage = new PageImpl<>(Collections.singletonList(user));
 
             when(userRepository.findByIsAdminFalse(pageable)).thenReturn(userPage);
-            when(modelMapper.map(any(User.class), eq(UserDto.class)))
+            when(modelMapper.map(any(User.class), eq(UserBasicInfoDto.class)))
                     .thenThrow(RuntimeException.class);
 
             assertThrows(RuntimeException.class,
                     () -> userService.getUsers(0, 10, null));
 
             verify(userRepository).findByIsAdminFalse(pageable);
-            verify(modelMapper).map(any(User.class), eq(UserDto.class));
+            verify(modelMapper).map(any(User.class), eq(UserBasicInfoDto.class));
         }
 
         @Test
@@ -116,7 +108,7 @@ class UserServiceTest {
 
             when(userRepository.findByIsAdminFalse(pageable)).thenReturn(userPage);
 
-            Page<UserDto> result = userService.getUsers(0, 10, null);
+            Page<UserBasicInfoDto> result = userService.getUsers(0, 10, null);
 
             assertEquals(0, result.getTotalElements());
             verify(userRepository).findByIsAdminFalse(pageable);
@@ -171,14 +163,14 @@ class UserServiceTest {
         @Test
         void whenUserExists_ShouldReturnUserDto() {
             when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-            when(modelMapper.map(user, UserDto.class)).thenReturn(userDto);
+            when(modelMapper.map(user, UserDetailDto.class)).thenReturn(userDetailDto);
 
-            UserDto result = userService.getUserById(1L);
+            UserDetailDto result = userService.getUserDetailById(1L);
 
-            assertEquals(userDto.getId(), result.getId());
-            assertEquals(userDto.getEmail(), result.getEmail());
+            assertEquals(userDetailDto.getId(), result.getId());
+            assertEquals(userDetailDto.getEmail(), result.getEmail());
             verify(userRepository).findById(1L);
-            verify(modelMapper).map(user, UserDto.class);
+            verify(modelMapper).map(user, UserDetailDto.class);
         }
 
         @Test
@@ -186,7 +178,7 @@ class UserServiceTest {
             when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
             assertThrows(EntityNotFoundException.class,
-                    () -> userService.getUserById(1L));
+                    () -> userService.getUserDetailById(1L));
 
             verify(userRepository).findById(1L);
             verify(modelMapper, never()).map(any(), any());
@@ -195,14 +187,42 @@ class UserServiceTest {
         @Test
         void whenMappingFails_ShouldThrowException() {
             when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-            when(modelMapper.map(any(User.class), eq(UserDto.class)))
+            when(modelMapper.map(any(User.class), eq(UserDetailDto.class)))
                     .thenThrow(RuntimeException.class);
 
             assertThrows(RuntimeException.class,
-                    () -> userService.getUserById(1L));
+                    () -> userService.getUserDetailById(1L));
 
             verify(userRepository).findById(1L);
-            verify(modelMapper).map(any(User.class), eq(UserDto.class));
+            verify(modelMapper).map(any(User.class), eq(UserDetailDto.class));
         }
+    }
+
+    private User createUser() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@email.com");
+        user.setUsername("testUser");
+        user.setIsAdmin(false);
+        user.setIsCommentBlocked(false);
+        return user;
+    }
+
+    private UserBasicInfoDto createUserListItemDto() {
+        UserBasicInfoDto userBasicInfoDto = new UserBasicInfoDto();
+        userBasicInfoDto.setId(1L);
+        userBasicInfoDto.setEmail("test@email.com");
+        userBasicInfoDto.setUsername("testUser");
+        userBasicInfoDto.setCommentBlocked(false);
+        return userBasicInfoDto;
+    }
+
+    private UserDetailDto createUserDetailDto() {
+        UserDetailDto userDetailDto = new UserDetailDto();
+        userDetailDto.setId(1L);
+        userDetailDto.setEmail("test@email.com");
+        userDetailDto.setAdmin(false);
+        userDetailDto.setCommentBlocked(false);
+        return userDetailDto;
     }
 }

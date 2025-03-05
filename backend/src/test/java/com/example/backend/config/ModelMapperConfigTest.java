@@ -128,7 +128,7 @@ class ModelMapperConfigTest {
 
         @Test
         void whenChapterHasNoComments_ShouldSetCommentCountToZero() {
-            Chapter chapter = new Chapter(null, null, null, null, 0, 0, null, null);
+            Chapter chapter = new Chapter(null, new ChapterGroup(), null, null, 0, 0, null, Set.of());
             ChapterDetailDto chapterDetailDto = new ChapterDetailDto(null, null, null, null, 0, 0, null, 0);
 
             ChapterDetailDto result = modelMapper.map(chapter, ChapterDetailDto.class);

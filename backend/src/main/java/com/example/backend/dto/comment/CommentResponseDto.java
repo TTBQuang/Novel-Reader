@@ -1,6 +1,6 @@
 package com.example.backend.dto.comment;
 
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserDetailDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentResponseDto {
     private Long id;
-    private UserDto user;
+    private UserDetailDto user;
     private String content;
     private LocalDateTime createdAt;
 }

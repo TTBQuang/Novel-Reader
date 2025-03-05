@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.user.UserDto;
+import com.example.backend.dto.user.UserBasicInfoDto;
+import com.example.backend.dto.user.UserDetailDto;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,7 +19,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public Page<UserDto> getUsers(int page, int size, String keyword) {
+    public Page<UserBasicInfoDto> getUsers(int page, int size, String keyword) {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> userPage;
 
@@ -28,9 +29,8 @@ public class UserService {
             userPage = userRepository.searchByKeyword(keyword, pageable);
         }
 
-        return userPage.map(user -> modelMapper.map(user, UserDto.class));
+        return userPage.map(user -> modelMapper.map(user, UserBasicInfoDto.class));
     }
-
 
     public void updateUserCommentBlockStatus(Long userId, boolean isBlocked) {
         User user = userRepository.findById(userId)
@@ -39,10 +39,40 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserDto getUserById(long id) {
+    public UserDetailDto getUserDetailById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException ("User not found"));
-        return modelMapper.map(user, UserDto.class);
+        return modelMapper.map(user, UserDetailDto.class);
+    }
+
+    public UserBasicInfoDto getUserBasicInfoById(long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return modelMapper.map(user, UserBasicInfoDto.class);
+    }
+
+    public void updateUserAvatar(Long userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setAvatar(imageUrl);
+        userRepository.save(user);
+    }
+
+    public void updateUserCoverImage(Long userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setCoverImage(imageUrl);
+        userRepository.save(user);
+    }
+
+    public void updateUserDisplayName(Long userId, String displayName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setDisplayName(displayName);
+        userRepository.save(user);
     }
 }
 

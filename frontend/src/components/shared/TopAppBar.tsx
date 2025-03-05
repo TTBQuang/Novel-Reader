@@ -54,6 +54,11 @@ const TopAppBar = memo(({ onSearch, onLogoClick }: TopAppBarProps) => {
     []
   );
 
+  const navigateToProfile = () => {
+    navigate(`/user/${user?.id}`);
+    setDropdownOpen(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -75,12 +80,19 @@ const TopAppBar = memo(({ onSearch, onLogoClick }: TopAppBarProps) => {
     if (isAuthenticated && user) {
       return (
         <div className={styles["user-container"]} ref={dropdownRef}>
-          <span className={styles["username"]}>{user.username}</span>
+          <span className={styles["display_name"]}>{user.displayName}</span>
           <span className={styles["dropdown-icon"]} onClick={toggleDropdown}>
             <FaCaretDown />
           </span>
           {isDropdownOpen && (
             <div className={styles["dropdown-menu"]}>
+              <div
+                className={styles["dropdown-item"]}
+                onClick={navigateToProfile}
+              >
+                Trang cá nhân
+              </div>
+
               {user.admin && (
                 <div
                   className={styles["dropdown-item"]}
@@ -89,6 +101,7 @@ const TopAppBar = memo(({ onSearch, onLogoClick }: TopAppBarProps) => {
                   Quản lý user
                 </div>
               )}
+
               <div className={styles["dropdown-item"]} onClick={handleLogout}>
                 Đăng xuất
               </div>

@@ -1,15 +1,10 @@
 import { ChapterGroup } from "./ChapterGroup";
 import { Genre } from "./Genre";
+import { User } from "./User";
 
 export interface Novel {
     id: number;
-    poster: {
-        id: number;
-        email: string;
-        username: string;
-        commentBlocked: boolean;
-        admin: boolean;
-    };
+    poster: User;
     chapterGroups: ChapterGroup[];
     name: string;
     author: string;
@@ -18,6 +13,7 @@ export interface Novel {
     summary: string;
     status: string;
     wordsCount: number;
+    creationDate: string;
     lastUpdateDate: string;
     genres: Genre[];
 }
