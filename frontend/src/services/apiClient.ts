@@ -5,7 +5,7 @@ interface FetchOptions extends Omit<RequestInit, 'headers'> {
     headers?: HeadersInit;
 }
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = `${window.location.protocol}//${window.location.hostname}:8080`;
 
 function normalizeHeaders(headers?: HeadersInit): Record<string, string> {
     const normalized: Record<string, string> = {};
