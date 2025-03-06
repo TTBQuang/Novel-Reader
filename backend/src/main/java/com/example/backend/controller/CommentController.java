@@ -9,7 +9,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,7 +52,13 @@ public class CommentController {
     @PreAuthorize("hasAuthority('COMMENT')")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CommentResponseDto> insertComment(@RequestBody CommentRequestDto commentRequestDto) {
-        CommentResponseDto response = commentService.insertComment(commentRequestDto);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("Không xác thực được người dùng");
+        }
+        Long userId = Long.valueOf(authentication.getName());
+
+        CommentResponseDto response = commentService.insertComment(userId, commentRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

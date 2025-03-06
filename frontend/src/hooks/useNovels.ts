@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { NovelItem } from "../models/NovelItem";
 import { fetchNovels } from "../services/novelsApi";
-import { NovelsResponse } from "../models/NovelItem";
+import { NovelsResponse } from "../models/NovelsResponse";
 import { NOVELS_PER_PAGE } from "../utils/constants";
+import { Novel } from "../models/Novel";
 
 export const useNovels = (
     currentPage: number,
@@ -12,7 +12,7 @@ export const useNovels = (
     status?: string,
     genreIds?: string
 ) => {
-    const [novelsList, setNovelsList] = useState<NovelItem[]>([]);
+    const [novelsList, setNovelsList] = useState<Novel[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [totalPages, setTotalPages] = useState<number>(10);
 

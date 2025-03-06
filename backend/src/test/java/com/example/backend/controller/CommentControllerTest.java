@@ -6,10 +6,7 @@ import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,7 +16,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -226,23 +227,37 @@ class CommentControllerTest {
     @Nested
     @DisplayName("InsertComment Tests")
     class InsertCommentTests {
+        @AfterEach
+        void clearSecurityContext() {
+            SecurityContextHolder.clearContext();
+        }
 
         @Test
         void whenInsertComment_ShouldReturnCreatedComment() throws Exception {
+            setUpSecurityContext(true);
+
             CommentRequestDto requestDto = createCommentRequestDto();
             CommentResponseDto responseDto = createCommentResponseDto(1L, "Nice read!");
-            when(commentService.insertComment(any(CommentRequestDto.class))).thenReturn(responseDto);
+            when(commentService.insertComment(eq(1L), any(CommentRequestDto.class))).thenReturn(responseDto);
 
             mockMvc.perform(post("/comments")
-                            .with(SecurityMockMvcRequestPostProcessors.user("commenter")
-                                    .authorities(new SimpleGrantedAuthority("COMMENT")))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(requestDto)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.content").value("Nice read!"));
 
-            verify(commentService).insertComment(any(CommentRequestDto.class));
+            verify(commentService).insertComment(eq(1L), any(CommentRequestDto.class));
+        }
+
+        @Test
+        void whenUserNotAuthenticated_ShouldReturnUnauthorized() {
+            setUpSecurityContext(false);
+            CommentRequestDto requestDto = createCommentRequestDto();
+
+            assertThrows(AuthenticationCredentialsNotFoundException.class, () -> commentController.insertComment(requestDto));
+
+            verify(commentService, never()).insertComment(anyLong(), any(CommentRequestDto.class));
         }
     }
 
@@ -255,6 +270,19 @@ class CommentControllerTest {
 
     private CommentRequestDto createCommentRequestDto() {
         return new CommentRequestDto(1L, null, "Content");
+    }
+
+    void setUpSecurityContext(boolean isAuthenticated) {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        if (isAuthenticated) {
+            when(authentication.getName()).thenReturn("1");
+        }
+        when(authentication.isAuthenticated()).thenReturn(isAuthenticated);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 }
 

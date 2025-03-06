@@ -10,7 +10,9 @@ import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +56,7 @@ public class UserController {
     public ResponseEntity<Void> updateUserAvatar(@RequestBody UpdateImageRequest updateImageRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Không xác thực được người dùng");
+            throw new AuthenticationCredentialsNotFoundException("Không xác thực được người dùng");
         }
 
         Long userId = Long.valueOf(authentication.getName());
@@ -68,7 +70,7 @@ public class UserController {
     public ResponseEntity<Void> updateUserCoverImage(@RequestBody UpdateImageRequest updateImageRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Không xác thực được người dùng");
+            throw new AuthenticationCredentialsNotFoundException("Không xác thực được người dùng");
         }
 
         Long userId = Long.valueOf(authentication.getName());
@@ -84,7 +86,7 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Không xác thực được người dùng");
+            throw new AuthenticationCredentialsNotFoundException("Không xác thực được người dùng");
         }
 
         Long userId = Long.valueOf(authentication.getName());

@@ -46,14 +46,9 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    public CommentResponseDto insertComment(CommentRequestDto commentRequestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Không xác thực được người dùng");
-        }
-        String userIdString = authentication.getName();
+    public CommentResponseDto insertComment(Long userId, CommentRequestDto commentRequestDto) {
         User user = new User();
-        user.setId(Long.valueOf(userIdString));
+        user.setId(userId);
 
         Comment comment = modelMapper.map(commentRequestDto, Comment.class);
         comment.setUser(user);

@@ -1,5 +1,5 @@
 import { Novel } from "../models/Novel";
-import { NovelsResponse } from "../models/NovelItem";
+import { NovelsResponse } from "../models/NovelsResponse";
 import { apiClient } from "./apiClient";
 
 export const fetchNovels = (

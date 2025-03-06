@@ -2,20 +2,21 @@ package com.example.backend.service;
 
 import com.example.backend.dto.comment.CommentRequestDto;
 import com.example.backend.dto.comment.CommentResponseDto;
+import com.example.backend.dto.user.UserDetailDto;
 import com.example.backend.entity.Comment;
 import com.example.backend.entity.User;
 import com.example.backend.repository.CommentRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -33,12 +34,6 @@ class CommentServiceTest {
 
     @Mock
     private ModelMapper modelMapper;
-
-    @Mock
-    private SecurityContext securityContext;
-
-    @Mock
-    private Authentication authentication;
 
     @InjectMocks
     private CommentService commentService;
@@ -213,53 +208,34 @@ class CommentServiceTest {
     @Nested
     @DisplayName("insertComment Tests")
     class InsertCommentTests {
-
-        @BeforeEach
-        void setUpSecurityContext() {
-            SecurityContextHolder.setContext(securityContext);
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-        }
-
-        @AfterEach
-        void clearSecurityContext() {
-            SecurityContextHolder.clearContext();
-        }
-
         @Test
-        void whenUserAuthenticated_ShouldInsertComment() {
-            when(authentication.isAuthenticated()).thenReturn(true);
-            when(authentication.getName()).thenReturn("1");
+        void whenInsertCommentWithValidData_ShouldReturnCommentResponseDto() {
+            Long userId = 1L;
+            User user = new User();
+            user.setId(userId);
+            UserDetailDto userDetailDto = new UserDetailDto();
+            userDetailDto.setId(userId);
+
+            CommentResponseDto responseWithUser = new CommentResponseDto();
+            responseWithUser.setId(comment.getId());
+            responseWithUser.setUser(userDetailDto);
+            comment.setUser(user);
+
             when(modelMapper.map(commentRequestDto, Comment.class)).thenReturn(comment);
             when(commentRepository.save(comment)).thenReturn(comment);
-            when(commentRepository.getCommentDetail(1L)).thenReturn(comment);
-            when(modelMapper.map(comment, CommentResponseDto.class)).thenReturn(commentResponseDto);
+            when(commentRepository.getCommentDetail(anyLong())).thenReturn(comment);
+            when(modelMapper.map(comment, CommentResponseDto.class)).thenReturn(responseWithUser);
 
-            CommentResponseDto result = commentService.insertComment(commentRequestDto);
+            CommentResponseDto result = commentService.insertComment(userId, commentRequestDto);
 
-            assertNotNull(result);
-            assertEquals(commentResponseDto.getId(), result.getId());
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(comment.getId(), result.getId()),
+                    () -> assertNotNull(result.getUser()),
+                    () -> assertEquals(userId, result.getUser().getId())
+            );
             verify(commentRepository).save(comment);
-            verify(commentRepository).getCommentDetail(1L);
-        }
-
-        @Test
-        void whenUserNotAuthenticated_ShouldThrowException() {
-            when(authentication.isAuthenticated()).thenReturn(false);
-
-            assertThrows(RuntimeException.class, () -> commentService.insertComment(commentRequestDto));
-
-            verify(commentRepository, never()).save(any());
-            verify(commentRepository, never()).getCommentDetail(anyLong());
-        }
-
-        @Test
-        void whenAuthenticationNull_ShouldThrowException() {
-            when(securityContext.getAuthentication()).thenReturn(null);
-
-            assertThrows(RuntimeException.class, () -> commentService.insertComment(commentRequestDto));
-
-            verify(commentRepository, never()).save(any());
-            verify(commentRepository, never()).getCommentDetail(anyLong());
+            verify(commentRepository).getCommentDetail(anyLong());
         }
     }
 }
