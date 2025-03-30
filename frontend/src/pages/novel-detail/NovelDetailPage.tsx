@@ -12,6 +12,7 @@ import avatar from "../../assets/avatar.jpg";
 import { ChapterGroup } from "../../models/ChapterGroup";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import { ToastContainer } from "react-toastify";
+import { useEffect } from "react";
 
 const NovelDetailPage = () => {
   const { novelId } = useParams<{ novelId: string }>();
@@ -43,6 +44,11 @@ const NovelDetailPage = () => {
     error: createError,
   } = useCreateComment();
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleNovelCommentSubmit = async (commentText: string) => {
     if (!novel || !novel.id) return;
     try {
@@ -73,15 +79,23 @@ const NovelDetailPage = () => {
   };
 
   if (isLoadingNovelDetail) {
-    return <div>Loading...</div>;
+    return <div className={styles["loading-container"]}>Loading...</div>;
   }
 
   if (errorLoadingNovelDetail) {
-    return <div>Error: {errorLoadingNovelDetail.message}</div>;
+    return (
+      <div className={styles["error-container"]}>
+        Error: {errorLoadingNovelDetail.message}
+      </div>
+    );
   }
 
   if (!novel) {
-    return <div>Không tìm thấy dữ liệu truyện.</div>;
+    return (
+      <div className={styles["error-container"]}>
+        Không tìm thấy dữ liệu truyện.
+      </div>
+    );
   }
 
   return (
@@ -136,7 +150,9 @@ const NovelDetailPage = () => {
           ))}
 
           {novelCommentsError ? (
-            <div>Error loading comments: {novelCommentsError.message}</div>
+            <div className={styles["error-container"]}>
+              Error loading comments: {novelCommentsError.message}
+            </div>
           ) : (
             <CommentSection
               comments={novelComments}
@@ -150,7 +166,9 @@ const NovelDetailPage = () => {
             />
           )}
           {createError && (
-            <div>Error creating comment: {createError.message}</div>
+            <div className={styles["error-container"]}>
+              Error creating comment: {createError.message}
+            </div>
           )}
         </div>
       </div>

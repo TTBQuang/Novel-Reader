@@ -1,19 +1,19 @@
 .login-page {
     background: var(--color-background-gradient);
     width: 100vw;
-    height: 100vh;
+    min-height: 100dvh;
     margin: 0;
-    padding: 0;
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .login-container {
-    width: 100%;
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
+    width: 90%;
+    max-width: 350px;
+    padding: 25px;
     background-color: var(--color-background-top-app-bar);
     border-radius: 12px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -21,16 +21,16 @@
 }
 
 .login-text {
-    font-size: 32px;
+    font-size: 28px;
     color: var(--color-text-primary);
     font-weight: bold;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     color: var(--color-text-primary);
 }
 
@@ -41,12 +41,13 @@
 }
 
 .input-group input {
-    padding: 14px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     background-color: #f9f9f9;
     color: #333;
+    width: 100%;
 }
 
 .remember-me {
@@ -54,8 +55,6 @@
     align-items: center;
     gap: 10px;
     justify-content: flex-start;
-    margin-top: -10px;
-    margin-bottom: 10px;
     color: var(--color-text-primary);
 }
 
@@ -68,20 +67,18 @@
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
+    width: 100%;
 }
 
 .register-link {
     margin-top: 15px;
-    text-decoration: none;
 }
 
 .register-link span:first-child {
     color: var(--color-text-primary);
-    cursor: default;
 }
 
 .register-link-text {
-    cursor: pointer;
     color: #007bff;
     font-size: 14px;
     text-decoration: none;
@@ -92,9 +89,8 @@
     display: flex;
     align-items: center;
     margin: 20px 0;
-    color: black;
-    font-size: 14px;
     color: var(--color-text-primary);
+    font-size: 14px;
 }
 
 .separator::before,
@@ -108,15 +104,34 @@
 
 .login-container h2 {
     font-size: 16px;
-    margin-top: 20px;
+    margin-top: 15px;
     color: #007bff;
     cursor: pointer;
 }
 
 .forgot-password {
-    margin-top: 5px;
     font-size: 16px;
     color: #007bff;
     cursor: pointer;
     text-decoration: none;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        max-width: 100%;
+        padding: 15px;
+        box-shadow: none;
+    }
+}
+
+@media (min-width: 768px) {
+    .login-container {
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .login-container {
+        max-width: 450px;
+    }
 }

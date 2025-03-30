@@ -19,6 +19,7 @@ import {
   mapNovelStatusToApiValue,
 } from "../../models/NovelStatus";
 import StatusFilter from "../../components/home/StatusFilter";
+import { FaChevronDown, FaTimes } from "react-icons/fa";
 
 interface FilterState {
   page: number;
@@ -38,44 +39,41 @@ const DEFAULT_FILTERS: FilterState = {
   genreFilter: "",
 };
 
-const getInitialSortOption = (
-  urlSortOption: string | null
-): NovelSortOption => {
-  if (!urlSortOption) return NovelSortOption.AZ;
-  return (
-    Object.values(NovelSortOption).find(
-      (option) => mapNovelSortOptionToApiValue(option) === urlSortOption
-    ) || NovelSortOption.AZ
-  );
-};
-
 const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
   const [filters, setFilters] = useState<FilterState>(() => ({
     ...DEFAULT_FILTERS,
     page: Number(searchParams.get("page")) || 1,
     pageInput: Number(searchParams.get("page")) || 1,
-    sortOption: getInitialSortOption(searchParams.get("sortOption")),
     keyword: searchParams.get("keyword") || "",
   }));
 
   const { page, pageInput, sortOption, keyword, statusFilter, genreFilter } =
     filters;
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992);
+      if (window.innerWidth >= 992) {
+        setShowMobileFilters(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const updateUrlParams = useCallback(
-    (newFilters: Partial<FilterState>, shouldReplace: boolean = false) => {
+    (newFilters: Partial<FilterState>) => {
       const params = new URLSearchParams(searchParams);
 
       if (newFilters.page !== undefined) {
         params.set("page", newFilters.page.toString());
       }
-      if (newFilters.sortOption !== undefined) {
-        params.set(
-          "sortOption",
-          mapNovelSortOptionToApiValue(newFilters.sortOption)
-        );
-      }
+
       if (newFilters.keyword !== undefined) {
         if (newFilters.keyword.trim()) {
           params.set("keyword", newFilters.keyword);
@@ -84,31 +82,37 @@ const HomePage = () => {
         }
       }
 
-      setSearchParams(params, { replace: shouldReplace });
+      setSearchParams(params);
     },
     [searchParams, setSearchParams]
   );
 
   useEffect(() => {
     const urlPage = Number(searchParams.get("page")) || 1;
-    const urlSortOption = getInitialSortOption(searchParams.get("sortOption"));
     const urlKeyword = searchParams.get("keyword") || "";
 
-    if (
-      urlPage !== filters.page ||
-      urlSortOption !== filters.sortOption ||
-      urlKeyword !== filters.keyword
-    ) {
+    if (urlPage !== filters.page || urlKeyword !== filters.keyword) {
       setFilters((prev) => ({
         ...prev,
         page: urlPage,
         pageInput: urlPage,
-        sortOption: urlSortOption,
         keyword: urlKeyword,
       }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // Prevent body scroll when mobile filters are open
+  useEffect(() => {
+    if (showMobileFilters) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showMobileFilters]);
 
   const { novelsList, loading, totalPages } = useNovels(
     page - 1,
@@ -129,13 +133,7 @@ const HomePage = () => {
         page: 1,
         pageInput: 1,
       }));
-      updateUrlParams(
-        {
-          sortOption: newSortOption,
-          page: 1,
-        },
-        true
-      );
+      updateUrlParams({ page: 1 });
     },
     [updateUrlParams]
   );
@@ -148,7 +146,7 @@ const HomePage = () => {
           page: newPage,
           pageInput: newPage,
         }));
-        updateUrlParams({ page: newPage }, false);
+        updateUrlParams({ page: newPage });
       }
     },
     [totalPages, updateUrlParams]
@@ -162,46 +160,57 @@ const HomePage = () => {
         page: 1,
         pageInput: 1,
       }));
-      updateUrlParams(
-        {
-          keyword: newKeyword,
-          page: 1,
-        },
-        true
-      );
+      updateUrlParams({
+        keyword: newKeyword,
+        page: 1,
+      });
     },
     [updateUrlParams]
   );
 
-  const handleStatusApply = useCallback((selectedStatus: NovelStatus[]) => {
-    const statusParam = selectedStatus
-      .map((status) => mapNovelStatusToApiValue(status))
-      .join(",");
+  const handleStatusApply = useCallback(
+    (selectedStatus: NovelStatus[]) => {
+      const statusParam = selectedStatus
+        .map((status) => mapNovelStatusToApiValue(status))
+        .join(",");
 
-    setFilters((prev) => ({
-      ...prev,
-      statusFilter: statusParam,
-      page: 1,
-      pageInput: 1,
-    }));
-  }, []);
+      setFilters((prev) => ({
+        ...prev,
+        statusFilter: statusParam,
+        page: 1,
+        pageInput: 1,
+      }));
+      updateUrlParams({ page: 1 });
+      setShowMobileFilters(false);
+    },
+    [updateUrlParams]
+  );
 
-  const handleGenreApply = useCallback((selectedGenreIds: number[]) => {
-    setFilters((prev) => ({
-      ...prev,
-      genreFilter: selectedGenreIds.join(","),
-      page: 1,
-      pageInput: 1,
-    }));
-  }, []);
+  const handleGenreApply = useCallback(
+    (selectedGenreIds: number[]) => {
+      setFilters((prev) => ({
+        ...prev,
+        genreFilter: selectedGenreIds.join(","),
+        page: 1,
+        pageInput: 1,
+      }));
+      updateUrlParams({ page: 1 });
+      setShowMobileFilters(false);
+    },
+    [updateUrlParams]
+  );
 
   const handleLogoClick = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
-    setSearchParams({}, { replace: true });
+    setSearchParams({});
   }, [setSearchParams]);
 
   const handlePageInputChange = useCallback((newPageInput: number) => {
     setFilters((prev) => ({ ...prev, pageInput: newPageInput }));
+  }, []);
+
+  const toggleMobileFilters = useCallback(() => {
+    setShowMobileFilters((prev) => !prev);
   }, []);
 
   const renderNovelsList = () => {
@@ -218,6 +227,13 @@ const HomePage = () => {
     );
   };
 
+  const renderFilters = () => (
+    <>
+      <StatusFilter onApply={handleStatusApply} />
+      <GenreFilter genres={genresList} onApply={handleGenreApply} />
+    </>
+  );
+
   return (
     <>
       <TopAppBar onSearch={handleSearch} onLogoClick={handleLogoClick} />
@@ -225,6 +241,35 @@ const HomePage = () => {
       <div className={styles["home-page"]}>
         <div className={styles["home-page-content"]}>
           <div className={styles["left-content"]}>
+            {isMobile && (
+              <div
+                className={styles["filter-toggle"]}
+                onClick={toggleMobileFilters}
+              >
+                <span className={styles["filter-toggle-text"]}>Filters</span>
+                <span
+                  className={`${styles["filter-toggle-icon"]} ${
+                    showMobileFilters ? styles.open : ""
+                  }`}
+                >
+                  <FaChevronDown />
+                </span>
+              </div>
+            )}
+
+            {isMobile && showMobileFilters && (
+              <div className={styles["mobile-filters"]}>
+                <button
+                  className={styles["close-filters"]}
+                  onClick={() => setShowMobileFilters(false)}
+                >
+                  <FaTimes />
+                </button>
+                <h2>Filters</h2>
+                {renderFilters()}
+              </div>
+            )}
+
             <NovelSpinner
               selectedOption={sortOption}
               onSortOptionChange={handleSort}
@@ -240,10 +285,9 @@ const HomePage = () => {
               />
             </div>
           </div>
-          <div className={styles["right-content"]}>
-            <StatusFilter onApply={handleStatusApply} />
-            <GenreFilter genres={genresList} onApply={handleGenreApply} />
-          </div>
+          {!isMobile && (
+            <div className={styles["right-content"]}>{renderFilters()}</div>
+          )}
         </div>
       </div>
     </>

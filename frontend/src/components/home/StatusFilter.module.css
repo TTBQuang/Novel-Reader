@@ -11,10 +11,20 @@
     background-color: var(--color-background-text-filter);
     padding: 5px;
     text-align: center;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .status-checkboxes {
     margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+@media (min-width: 992px) {
+    .status-checkboxes {
+        max-height: none;
+    }
 }
 
 .status-checkboxes div {
@@ -25,6 +35,10 @@
 
 .status-checkboxes input[type="checkbox"] {
     margin-right: 8px;
+}
+
+.status-checkboxes label {
+    font-size: 14px;
 }
 
 .apply-button {

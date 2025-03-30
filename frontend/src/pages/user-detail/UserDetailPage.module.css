@@ -280,3 +280,95 @@
 .meta-value {
     font-size: 14px;
 }
+
+@media (max-width: 768px) {
+    .page-container {
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    .user-profile-container {
+        margin: 20px auto;
+        padding-bottom: 40px;
+    }
+
+    .cover-image {
+        height: 180px;
+    }
+
+    .user-display-name {
+        top: 130px;
+        left: 20px;
+        gap: 10px;
+    }
+
+    .avatar-container {
+        width: 100px;
+        height: 100px;
+    }
+
+    .user-info {
+        padding-top: 40px;
+        padding-left: 5px;
+    }
+
+    .display-name {
+        font-size: 16px;
+    }
+
+    .user-id {
+        font-size: 12px;
+    }
+
+    .stats-and-novels-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .stats-container {
+        width: 100%;
+    }
+
+    .novel-item {
+        width: 100%;
+    }
+
+    .novel-image {
+        width: 100px;
+        min-height: 150px;
+    }
+
+    .novel-title {
+        font-size: 16px;
+    }
+
+    .meta-label,
+    .meta-value {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-display-name {
+        flex-direction: column;
+        align-items: flex-start;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        align-items: center;
+    }
+
+    .display-name {
+        margin-top: -70px;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        padding-top: 60px;
+    }
+
+    .user-profile-container {
+        padding-bottom: 80px;
+    }
+}

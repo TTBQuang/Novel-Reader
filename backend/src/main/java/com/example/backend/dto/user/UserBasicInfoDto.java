@@ -14,4 +14,5 @@ public class UserBasicInfoDto {
     private boolean isCommentBlocked;
     private String displayName;
     private String avatar;
+    private boolean isAdmin;
 }

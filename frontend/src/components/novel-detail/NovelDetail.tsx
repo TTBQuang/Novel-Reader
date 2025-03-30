@@ -1,4 +1,5 @@
 import { Novel } from "../../models/Novel";
+import { mapApiStatusToNovelStatus } from "../../models/NovelStatus";
 import styles from "./NovelDetail.module.css";
 
 interface NovelDetailProps {
@@ -25,13 +26,17 @@ const NovelDetail = ({ novel }: NovelDetailProps) => {
           </div>
           <div className={styles["novel-metadata"]}>
             <p>
-              <strong>Tác giả:</strong> <span>{novel.author}</span>
+              <strong>Tác giả:</strong>{" "}
+              <span>{novel.author?.trim() || "N/A"}</span>
             </p>
             <p>
-              <strong>Họa sĩ:</strong> <span>{novel.artist}</span>
+              <strong>Họa sĩ:</strong>{" "}
+              <span>{novel.artist?.trim() || "N/A"}</span>
             </p>
+
             <p>
-              <strong>Tình trạng:</strong> <span>{novel.status}</span>
+              <strong>Tình trạng:</strong>{" "}
+              <span>{mapApiStatusToNovelStatus(novel.status)}</span>
             </p>
           </div>
         </div>

@@ -2,7 +2,7 @@ import { FaBackward, FaHome, FaSun, FaMoon, FaForward } from "react-icons/fa";
 import styles from "./ChapterDetailSidebar.module.css";
 import { useTheme } from "../../hooks/useTheme";
 import { useNavigate, useParams } from "react-router-dom";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Novel } from "../../models/Novel";
 
 interface ChapterDetailSidebarProps {
@@ -13,6 +13,23 @@ const ChapterDetailSidebar = ({ novel }: ChapterDetailSidebarProps) => {
   const navigate = useNavigate();
   const { chapterId } = useParams();
   const { theme, changeTheme } = useTheme();
+  const isMobile = window.innerWidth <= 768;
+  const [isVisible, setIsVisible] = useState(!isMobile);
+
+  // Effect to handle screen tap to toggle sidebar on mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleScreenTap = () => {
+      setIsVisible((prev) => !prev);
+    };
+
+    document.addEventListener("click", handleScreenTap);
+
+    return () => {
+      document.removeEventListener("click", handleScreenTap);
+    };
+  }, [isMobile]);
 
   const findCurrentChapterInfo = useCallback(() => {
     if (!novel?.chapterGroups || !chapterId) return null;
@@ -96,11 +113,24 @@ const ChapterDetailSidebar = ({ novel }: ChapterDetailSidebarProps) => {
     }
   }, [novel, navigate]);
 
+  // Handle icon click without propagating to document
+  const handleIconClick = useCallback(
+    (e: React.MouseEvent, callback: () => void) => {
+      e.stopPropagation();
+      callback();
+    },
+    []
+  );
+
+  if (!isVisible && isMobile) {
+    return null;
+  }
+
   return (
     <div className={styles["fixed-column"]}>
       <div
         className={styles["icon"]}
-        onClick={navigateToPreviousChapter}
+        onClick={(e) => handleIconClick(e, navigateToPreviousChapter)}
         role="button"
         aria-label="Previous chapter"
       >
@@ -108,7 +138,7 @@ const ChapterDetailSidebar = ({ novel }: ChapterDetailSidebarProps) => {
       </div>
       <div
         className={styles["icon"]}
-        onClick={handleHomeClick}
+        onClick={(e) => handleIconClick(e, handleHomeClick)}
         role="button"
         aria-label="Home"
       >
@@ -116,7 +146,7 @@ const ChapterDetailSidebar = ({ novel }: ChapterDetailSidebarProps) => {
       </div>
       <div
         className={styles["icon"]}
-        onClick={changeTheme}
+        onClick={(e) => handleIconClick(e, changeTheme)}
         role="button"
         aria-label="Toggle theme"
       >
@@ -124,7 +154,7 @@ const ChapterDetailSidebar = ({ novel }: ChapterDetailSidebarProps) => {
       </div>
       <div
         className={styles["icon"]}
-        onClick={navigateToNextChapter}
+        onClick={(e) => handleIconClick(e, navigateToNextChapter)}
         role="button"
         aria-label="Next chapter"
       >

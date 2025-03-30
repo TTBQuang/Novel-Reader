@@ -39,7 +39,6 @@
     padding: 6px 12px;
     border-radius: 16px;
     font-size: 14px;
-    cursor: pointer;
 }
 
 .novel-metadata {
@@ -52,10 +51,6 @@
     margin: 0;
     font-size: 16px;
     display: inline;
-}
-
-.novel-metadata p span {
-    cursor: pointer;
 }
 
 .novel-summary {
@@ -71,4 +66,65 @@
 
 .summary-content {
     font-size: 16px;
+}
+
+@media screen and (max-width: 768px) {
+    .novel-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .novel-image {
+        width: 160px;
+        height: 240px;
+    }
+
+    .novel-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .novel-title {
+        font-size: 20px;
+    }
+
+    .novel-genres {
+        justify-content: center;
+    }
+
+    .novel-metadata p {
+        font-size: 14px;
+    }
+
+    .summary-content {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .novel-header {
+        padding: 15px 10px;
+    }
+
+    .novel-image {
+        width: 140px;
+        height: 210px;
+    }
+
+    .novel-summary {
+        padding: 15px 10px;
+    }
+
+    .novel-title {
+        font-size: 14px;
+    }
+
+    .summary-title {
+        font-size: 14px;
+    }
+
+    .summary-content {
+        font-size: 12px;
+    }
 }

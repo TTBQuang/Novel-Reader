@@ -130,7 +130,14 @@ const UserDetailPage: React.FC = () => {
 
   return (
     <>
-      <TopAppBar onSearch={() => {}} onLogoClick={() => navigate("/")} />
+      <TopAppBar
+        onSearch={(keyword: string) => {
+          navigate(`/?keyword=${encodeURIComponent(keyword)}`);
+        }}
+        onLogoClick={() => {
+          navigate("/");
+        }}
+      />
       <div className={styles["page-container"]}>
         <ToastContainer
           position="top-right"
@@ -284,8 +291,9 @@ const UserDetailPage: React.FC = () => {
                 <div key={novel.id} className={styles["novel-item"]}>
                   <img
                     src={novel.cover}
-                    alt={`Novel Cover`}
+                    alt={`${novel.name} Cover`}
                     className={styles["novel-image"]}
+                    loading="lazy" // Add lazy loading for better performance
                   />
                   <div className={styles["novel-info"]}>
                     <div

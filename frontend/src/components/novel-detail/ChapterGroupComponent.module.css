@@ -68,9 +68,59 @@
 
 .link {
     text-decoration: none;
+    display: block;
+    flex: 1;
 }
 
 .chapter-date {
     text-align: right;
     white-space: nowrap;
+}
+
+@media screen and (max-width: 768px) {
+    .content-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-column {
+        margin-bottom: 15px;
+    }
+
+    .list-column {
+        width: 100%;
+        padding-left: 0;
+    }
+
+    .title-row h3 {
+        font-size: 15px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .chapter-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .chapter-title {
+        margin-bottom: 5px;
+        width: 100%;
+    }
+
+    .chapter-date {
+        font-size: 12px;
+        width: 100%;
+        text-align: left;
+        color: #666;
+    }
+
+    .link {
+        width: 100%;
+    }
+
+    .title-row h3 {
+        font-size: 12px;
+    }
 }

@@ -61,4 +61,5 @@ public class CommentController {
         CommentResponseDto response = commentService.insertComment(userId, commentRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }

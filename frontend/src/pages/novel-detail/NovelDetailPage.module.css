@@ -1,11 +1,13 @@
 .page-content-container {
     background-color: var(--color-background-web);
+    padding: 0 10px;
 }
 
 .novel-detail-container {
     max-width: 1200px;
     margin: 0 auto;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .novel-detail {
@@ -44,4 +46,28 @@
 
 .chapter-group-container {
     margin-bottom: 20px;
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+    .novel-detail-container {
+        padding: 0 5px;
+    }
+}
+
+.loading-container,
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    color: var(--color-text-primary);
+    background-color: var(--color-background-web);
+}
+
+.error-container {
+    color: #d32f2f;
 }
