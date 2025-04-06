@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import LoginPage from "./pages/login/LoginPage";
 import HomePage from "./pages/home/HomePage";
 import RegisterPage from "./pages/register/RegisterPage";
@@ -8,8 +13,12 @@ import UserManagementPage from "./pages/user-management/UserManagementPage";
 import OTPVerificationPage from "./pages/otp-verification/OTPVerificationPage";
 import ForgotPasswordPage from "./pages/forgot-password/ForgotPasswordPage";
 import UserDetailPage from "./pages/user-detail/UserDetailPage";
+import { useContext } from "react";
+import { UserContext } from "./context/UserContext";
 
 const App = () => {
+  const { user } = useContext(UserContext) || {};
+
   return (
     <Router>
       <Routes>
@@ -24,7 +33,10 @@ const App = () => {
           element={<ChapterDetailPage />}
         />
         <Route path="/user/:userId" element={<UserDetailPage />} />
-        <Route path="/admin/users" element={<UserManagementPage />} />
+        <Route
+          path="/admin/users"
+          element={user?.admin ? <UserManagementPage /> : <Navigate to="/" />}
+        />
       </Routes>
     </Router>
   );
