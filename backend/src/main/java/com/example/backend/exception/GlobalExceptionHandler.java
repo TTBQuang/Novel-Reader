@@ -145,6 +145,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
         System.out.println(ex.toString());
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau");
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.toString());
     }
 }
