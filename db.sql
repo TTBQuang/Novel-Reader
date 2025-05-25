@@ -1,5 +1,5 @@
-CREATE DATABASE novel_reader;
-USE novel_reader;
+CREATE DATABASE novel_reader_deploy;
+USE novel_reader_deploy;
 
 CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -50,6 +50,7 @@ CREATE TABLE chapter_groups (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     novel_id INT UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
+    image VARCHAR(255) NOT NULL,
     group_order DECIMAL NOT NULL,
     CONSTRAINT fk_chapter_groups_novel_id FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE CASCADE
 );

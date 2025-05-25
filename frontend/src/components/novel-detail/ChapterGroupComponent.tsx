@@ -20,7 +20,7 @@ const ChapterGroupComponent = ({
 
       <div className={styles["content-row"]}>
         <div className={styles["image-column"]}>
-          <img src={novel.cover} alt={chapterGroup.name} />
+          <img src={chapterGroup.image} alt={chapterGroup.name} />
         </div>
 
         <div className={styles["list-column"]}>

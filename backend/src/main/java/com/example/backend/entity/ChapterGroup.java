@@ -25,6 +25,9 @@ public class ChapterGroup {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String image;
+
     @Column(name = "group_order", nullable = false)
     private double groupOrder;
 

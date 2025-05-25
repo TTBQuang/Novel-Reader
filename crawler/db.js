@@ -5,7 +5,7 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "123456",
-  database: "novel_reader",
+  database: "novel_reader_deploy",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -82,7 +82,7 @@ async function getGenreIds(genres, connection) {
   return genreIds;
 }
 
-async function insertChapterGroup(novelId, title) {
+async function insertChapterGroup(novelId, title, image) {
   if (!title) {
     return;
   }
@@ -92,10 +92,10 @@ async function insertChapterGroup(novelId, title) {
     await connection.beginTransaction();
 
     const query = `
-      INSERT INTO chapter_groups (novel_id, name) VALUES (?, ?)
+      INSERT INTO chapter_groups (novel_id, name, image) VALUES (?, ?, ?)
     `;
 
-    await connection.execute(query, [novelId, title]);
+    await connection.execute(query, [novelId, title, image]);
 
     const [result] = await connection.execute("SELECT LAST_INSERT_ID() AS id");
     const groupId = result[0].id;
@@ -153,17 +153,22 @@ async function insertChapter(
   }
 }
 
-async function insertUser(username, rawPassword) {
+async function insertUser(username, rawPassword, displayName) {
   const connection = await getConnection();
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(rawPassword, saltRounds);
 
     const query =
-      "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+      "INSERT INTO users (username, password, email, display_name) VALUES (?, ?, ?, ?)";
 
     const email = `${username}@gmail.com`;
-    await connection.execute(query, [username, hashedPassword, email]);
+    await connection.execute(query, [
+      username,
+      hashedPassword,
+      email,
+      displayName,
+    ]);
   } catch (error) {
     console.error("Lỗi khi insert user:", error);
   } finally {
@@ -219,13 +224,13 @@ async function insertFollowedNovel(user_id, novel_id) {
   }
 }
 
-async function insertCommentInNovel(user_id, novel_id, content, rate) {
+async function insertCommentInNovel(user_id, novel_id, content) {
   const connection = await getConnection();
   try {
     const [result] = await connection.execute(
-      `INSERT INTO comments (user_id, novel_id, content, rate) 
+      `INSERT INTO comments (user_id, novel_id, content) 
              VALUES (?, ?, ?, ?)`,
-      [user_id, novel_id, content, rate]
+      [user_id, novel_id, content]
     );
 
     return result.insertId;

@@ -17,12 +17,15 @@ const {
   insertCommentInChapter,
 } = require("./db");
 
-const BASE_URL = "https://ln.hako.vn/danh-sach?page=";
-const BASE_NOVEL_URL = "https://ln.hako.vn";
+const BASE_URL =
+  "https://docln.sbs/the-loai/romance?truyendich=1&dangtienhanh=1&tamngung=1&hoanthanh=1&sapxep=sotu&page=";
+const BASE_NOVEL_URL = "https://docln.sbs";
 const filePath = path.join(__dirname, "user_data.csv");
 const usersData = fs.readFileSync(filePath, "utf8").split("\n");
-const COMMENT_IN_NOVEL_COUNT = 15000;
-const COMMENT_IN_CHAPTER_COUNT = 45000;
+const filePathComment = path.join(__dirname, "comment_texts.csv");
+const comments = fs.readFileSync(filePathComment, "utf8").split("\n");
+const COMMENT_IN_NOVEL_COUNT = 200;
+const COMMENT_IN_CHAPTER_COUNT = 300;
 const FOLLOWER_COUNT = 10000;
 
 const axiosInstance = axios.create({
@@ -139,9 +142,14 @@ async function fetchNovelDetails(novelUrl) {
         .replace(/\*$/, "")
         .trim();
 
+      const styleAttr = $(group).find(".img-in-ratio").attr("style");
+      const imageMatch = styleAttr?.match(/url\(['"]?(.*?)['"]?\)/);
+      const imageUrl = imageMatch ? imageMatch[1] : null;
+
       let insertedGroupId = await insertChapterGroup(
         insertedNovelId,
-        groupTitle
+        groupTitle,
+        imageUrl
       );
 
       const chapterDetails = $(group)
@@ -232,7 +240,7 @@ function sleep(ms) {
 }
 
 async function crawlNovels() {
-  for (let page = 1; page <= 85; page++) {
+  for (let page = 27; page <= 28; page++) {
     console.log(`Fetching page ${page}...`);
     const html = await fetchPage(`${BASE_URL}${page}`);
 
@@ -271,9 +279,9 @@ async function saveGenresToDb() {
 async function insertUsers() {
   try {
     const insertPromises = usersData.map((row) => {
-      const [username, password] = row.split(",");
+      const [username, password, displayName] = row.split(",");
       if (username && password) {
-        return insertUser(username, password);
+        return insertUser(username, password, displayName);
       }
     });
 
@@ -285,28 +293,15 @@ async function insertUsers() {
   }
 }
 
-function generateRandomString() {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const length = Math.floor(Math.random() * (200 - 3 + 1)) + 3;
-  let result = "";
-
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    result += characters[randomIndex];
-  }
-
-  return result;
+function getRandomComment() {
+  const randomIndex = Math.floor(Math.random() * comments.length);
+  return comments[randomIndex];
 }
 
 function getRandomUserId() {
   let userId;
 
-  if (Math.random() < 0.5) {
-    userId = Math.floor(Math.random() * 1000) + 1;
-  } else {
-    userId = Math.floor(Math.random() * (3084 - 1085 + 1)) + 1085;
-  }
+  userId = Math.floor(Math.random() * 100) + 1;
 
   return userId;
 }
@@ -331,15 +326,9 @@ async function insertMultipleCommentsInNovel() {
     const user_id = getRandomUserId();
     const totalNovels = await getTotalNovels();
     const novel_id = Math.floor(Math.random() * totalNovels) + 1;
-    const rate = Math.random() < 0.8 ? null : Math.floor(Math.random() * 5) + 1;
 
     try {
-      await insertCommentInNovel(
-        user_id,
-        novel_id,
-        generateRandomString(),
-        rate
-      );
+      await insertCommentInNovel(user_id, novel_id, getRandomComment());
     } catch (error) {}
   }
   console.log("Đã chèn comments vào novels!");
@@ -352,17 +341,17 @@ async function insertMultipleCommentsInChapter() {
     const chapter_id = Math.floor(Math.random() * totalChapters) + 1;
 
     try {
-      await insertCommentInChapter(user_id, chapter_id, generateRandomString());
+      await insertCommentInChapter(user_id, chapter_id, getRandomComment());
     } catch (error) {}
   }
   console.log("Đã chèn comments vào chapter!");
 }
 
 (async function main() {
-  await saveGenresToDb();
-  await insertUsers();
+  // await saveGenresToDb();
+  // await insertUsers();
   await crawlNovels();
-  await insertMultipleFollowers();
+  // await insertMultipleFollowers();
   await insertMultipleCommentsInNovel();
   await insertMultipleCommentsInChapter();
   console.log("Finished crawling.");

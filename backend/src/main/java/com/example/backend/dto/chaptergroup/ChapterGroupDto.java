@@ -13,6 +13,7 @@ import java.util.List;
 public class ChapterGroupDto {
     private Long id;
     private String name;
+    private String image;
     private double groupOrder;
     private List<ChapterBasicInfoDto> chapters;
 }
