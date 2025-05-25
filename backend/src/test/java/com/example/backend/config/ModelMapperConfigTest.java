@@ -105,7 +105,7 @@ class ModelMapperConfigTest {
         @Test
         void whenMappingChapter_ShouldMapBasicFields() {
             ChapterGroup chapterGroup =
-                    new ChapterGroup(1L, null, "Test Group", 0.5, null);
+                    new ChapterGroup(1L, null, "Test Group", "", 0.5, null);
             Set<Comment> comments = Set.of(new Comment(), new Comment());
             Chapter chapter = new Chapter(2L, chapterGroup, "Test Chapter", "Content",
                             100, 0.5, null, comments);

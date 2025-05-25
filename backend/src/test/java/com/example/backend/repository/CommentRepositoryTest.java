@@ -52,7 +52,7 @@ class CommentRepositoryTest {
     }
 
     private ChapterGroup createTestChapterGroup(Novel novel){
-        return new ChapterGroup(null, novel, "name", 1, null);
+        return new ChapterGroup(null, novel, "name", "", 1, null);
     }
 
     private Chapter createTestChapter(ChapterGroup chapterGroup) {
