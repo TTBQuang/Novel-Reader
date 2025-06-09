@@ -5,8 +5,8 @@ interface FetchOptions extends Omit<RequestInit, 'headers'> {
     headers?: HeadersInit;
 }
 
-// const BASE_URL = `${window.location.protocol}//${window.location.hostname}:8080`;
-const BASE_URL = `https://novel-reader-obrn.onrender.com`;
+const BASE_URL = import.meta.env.VITE_API_URL;
+// const BASE_URL = `https://novel-reader-obrn.onrender.com`;
 
 function normalizeHeaders(headers?: HeadersInit): Record<string, string> {
     const normalized: Record<string, string> = {};

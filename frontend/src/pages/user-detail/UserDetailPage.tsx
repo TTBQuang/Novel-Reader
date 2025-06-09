@@ -291,7 +291,7 @@ const UserDetailPage: React.FC = () => {
                 <div key={novel.id} className={styles["novel-item"]}>
                   <img
                     src={novel.cover}
-                    alt={`${novel.name} Cover`}
+                    alt={`Cover`}
                     className={styles["novel-image"]}
                     loading="lazy" // Add lazy loading for better performance
                   />

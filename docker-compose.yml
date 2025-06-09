@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/novel_reader?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=novel_user
+      - SPRING_DATASOURCE_PASSWORD=novel_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - FIREBASE_APPLICATION_CREDENTIALS=/app/service-account.json
+      - JWT_SECRET_KEY=f78DfA5RK+8zrNs4pEFNOvGwuz67o5QlSBt48vYZ4IKlyxEJ+zBLAPNUP5KD8HgY
+      - SPRING_MAIL_USERNAME=buuquang45655@gmail.com
+      - SPRING_MAIL_PASSWORD=uwhz ywfd dacm siid
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./backend/src/main/resources/firebase/service-account.json:/app/service-account.json
+    networks:
+      - novel-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5173
+      - VITE_FIREBASE_API_KEY=AIzaSyCQwPTZ8cFStZR5G0QnpJ5UHJwoix34fRM
+      - VITE_FIREBASE_AUTH_DOMAIN=novel-reader-f5d3c.firebaseapp.com
+      - VITE_FIREBASE_PROJECT_ID=novel-reader-f5d3c
+      - VITE_FIREBASE_STORAGE_BUCKET=novel-reader-f5d3c.firebasestorage.app
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=746028746125
+      - VITE_FIREBASE_APP_ID=1:746028746125:web:e31b0ad0f6e686c632a9c4
+      - VITE_FIREBASE_MEASUREMENT_ID=G-6T9P7RS5X1
+      - VITE_GOOGLE_CLIENT_ID=820518618025-o1n1laavshs96jabm4hfbdnijnof0j2e.apps.googleusercontent.com
+    depends_on:
+      - backend
+    networks:
+      - novel-network
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=novel_reader
+      - MYSQL_USER=novel_user
+      - MYSQL_PASSWORD=novel_password
+      - MYSQL_ROOT_PASSWORD=root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/db/init:/docker-entrypoint-initdb.d
+    networks:
+      - novel-network
+
+  redis:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - novel-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  novel-network:
+    driver: bridge
