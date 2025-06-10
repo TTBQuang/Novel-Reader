@@ -58,7 +58,7 @@ class ChapterServiceTest {
 
             assertEquals(chapterDetailDto.getId(), result.getId());
             verify(chapterRepository, times(1)).findById(1L);
-            verify(modelMapper, times(1)).map(any(Chapter.class), eq(ChapterDetailDto.class));
+            verify(modelMapper, times(2)).map(any(Chapter.class), eq(ChapterDetailDto.class));
         }
 
         @Test
