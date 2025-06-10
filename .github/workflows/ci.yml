@@ -6,8 +6,6 @@ on:
   pull_request:
     branches: [ main, dev ]
 
-# test
-
 concurrency:
   group: novel-reader-${{ github.ref }}
   cancel-in-progress: true
